@@ -21,6 +21,14 @@ module "role-assignment" {
 }
 ```
 
+Outouts:
+```terraform
+output "role_assignments" {
+  value       = module.modules_role-assignment.role_assignments
+  description = "value of role_assignments"
+}
+```
+
 ## Requirements
 
 No requirements.
