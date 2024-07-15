@@ -53,6 +53,7 @@ output "access_policies" {
   description = "Access policies applied to the key vault"
   value       = module.keyvault-access-policy.access_policies
 }
+```
 
 ## Requirements
 
