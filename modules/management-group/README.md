@@ -1,16 +1,11 @@
 ## Usage
 
 ```terraform
-
-locals {
-  management_group    = jsondecode(file("./ccoe/management-group.json"))
-}
-
 module "modules_management-group" {
   source  = "app.terraform.io/hcta-azure-dev/modules/azurerm//modules/management-group"
   version = "<version>"
   
-  data = local.management_group
+  data = "${path.module}/ccoe/management-group.json"
 }
 ```
 
@@ -63,7 +58,12 @@ Json:
 
 Outputs:
 
-
+```terraform
+output "management_groups" {
+  value      = module.modules_management-group.management_groups
+  description = "Access policies applied to the key vault"
+}
+```
 
 ## Requirements
 
