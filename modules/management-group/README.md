@@ -6,11 +6,11 @@ locals {
   management_group    = jsondecode(file("./ccoe/management-group.json"))
 }
 
-module "management_group" {
-   source = "./modules/managment_group"
-
-data = local.management_group
-
+module "modules_management-group" {
+  source  = "app.terraform.io/hcta-azure-dev/modules/azurerm//modules/management-group"
+  version = "<version>"
+  
+  data = local.management_group
 }
 ```
 
