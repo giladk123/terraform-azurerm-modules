@@ -20,7 +20,7 @@ locals {
 
 resource "azurerm_virtual_network" "vnet" {
   for_each            = var.vnets
-  name                = each.key
+  name                = "${local.name_prefix}-${each.key}-vnet"
   resource_group_name = each.value.resource_group_name
   location            = each.value.location
   address_space       = each.value.address_space
