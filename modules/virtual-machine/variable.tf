@@ -35,6 +35,11 @@ variable "subnet_id" {
   type = string
 }
 
+variable "user_data" {
+  description = "User data to be used for the virtual machine."
+  type = string
+}
+
 variable "name_convention" {
   description = "Naming convention details."
   type = object({
