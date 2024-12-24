@@ -42,4 +42,49 @@ module "virtual_machine" {
 
   depends_on = [module.vnet]
 }
+
+{
+  "vms": {
+    "bastion": {
+      "resource_group": "we-iydy-sndb-abcd-xxxxxx-rg",
+      "location": "westeurope",
+      "size": "Standard_DS1_v2",
+      "ssh_public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACA.....",
+      "admin_username": "azureuser",
+      "image_offer": "ubuntu-24_04-lts",
+      "image_publisher": "Canonical",
+      "image_sku": "server",
+      "image_version": "latest",
+      "network_security_group_name": "nsg-vm1",
+      "security_rules": [
+        {
+          "name": "SSH",
+          "priority": 100,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "source_port_range": "*",
+          "destination_port_range": "22",
+          "source_address_prefix": "*",
+          "destination_address_prefix": "*"
+        }
+      ],
+      "private_ip_address": "10.62.252.4",
+      "create_public_ip": true,
+      "public_ip_allocation_method": "Dynamic",
+      "public_ip_dns_name": "vm1-dns",
+      "tags": {
+        "Environment": "dev"
+      }
+    }
+  },
+  "name_convention": {
+    "region": "we",
+    "dbank_idbank_first_letter": "i",
+    "env": "ydy",
+    "cmdb_infra": "sndb",
+    "cmdb_project": "abcd"
+  }
+}
+
 ```
