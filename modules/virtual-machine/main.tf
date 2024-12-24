@@ -111,7 +111,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     storage_account_type = "Standard_LRS"
   }
   
-  custom_data = var.user_data != "" ? base64encode(file(var.user_data)) : null
+  custom_data = var.user_data != "" ? base64encode(var.user_data) : null
 
   tags = each.value.tags
 }
