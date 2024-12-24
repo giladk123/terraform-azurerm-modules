@@ -10,7 +10,6 @@ variable "vms" {
     image_publisher             = string
     image_sku                   = string
     image_version               = string
-    subnet_id                   = string
     network_security_group_name = optional(string)
     security_rules              = optional(list(object({
       name                       = string
@@ -29,6 +28,11 @@ variable "vms" {
     public_ip_dns_name          = optional(string)
     tags                        = optional(map(string), {})
   }))
+}
+
+variable "subnet_id" {
+  description = "Map of subnet IDs."
+  type = string
 }
 
 variable "name_convention" {
