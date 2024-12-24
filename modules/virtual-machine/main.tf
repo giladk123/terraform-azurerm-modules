@@ -1,8 +1,3 @@
-# Ensure the AzureRM provider is configured
-provider "azurerm" {
-  features {}
-}
-
 # Create Public IPs for VMs that require them
 resource "azurerm_public_ip" "pip" {
   for_each = { for k, v in var.vms : k => v if lookup(v, "create_public_ip", false) }
