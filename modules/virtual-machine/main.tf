@@ -1,17 +1,16 @@
-# Create Public IPs for VMs that require them
 resource "azurerm_public_ip" "pip" {
-  for_each = { for k, v in var.vms : k => v if lookup(v, "create_public_ip", false) }
+  for_each = {
+    for k, v in var.vms : k => v
+    if lookup(v, "create_public_ip", false)
+  }
 
   name                = "${each.key}-pip"
   location            = each.value.location
   resource_group_name = each.value.resource_group
   allocation_method   = each.value.public_ip_allocation_method
 
-  dynamic "dns_settings" {
-    for_each = each.value.public_ip_dns_name != null ? [each.value.public_ip_dns_name] : []
-    content {
-      domain_name_label = dns_settings.value
-    }
+  lifecycle {
+    create_before_destroy = true
   }
 
   tags = each.value.tags
