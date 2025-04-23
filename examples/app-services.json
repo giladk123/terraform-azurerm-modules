@@ -1,0 +1,36 @@
+{
+  "python_app_1": {
+    "name": "python-web-app-1",
+    "resource_group_name": "my-resource-group",
+    "location": "westeurope",
+    "sku_name": "P1v2",
+    "docker_image": "python",
+    "docker_image_tag": "3.9",
+    "always_on": true,
+    "app_settings": {
+      "PYTHON_ENV": "production",
+      "WEBSITES_PORT": "8000"
+    },
+    "tags": {
+      "environment": "production",
+      "app": "python-web"
+    }
+  },
+  "python_app_2": {
+    "name": "python-web-app-2",
+    "resource_group_name": "my-resource-group",
+    "location": "westeurope",
+    "sku_name": "P1v2",
+    "docker_image": "python",
+    "docker_image_tag": "3.9",
+    "always_on": true,
+    "app_settings": {
+      "PYTHON_ENV": "staging",
+      "WEBSITES_PORT": "8000"
+    },
+    "tags": {
+      "environment": "staging",
+      "app": "python-web"
+    }
+  }
+} 
