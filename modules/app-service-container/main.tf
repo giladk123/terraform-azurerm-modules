@@ -16,7 +16,7 @@ resource "azurerm_linux_web_app" "app_service" {
 
   site_config {
     application_stack {
-      docker_image_name = "${each.value.docker_image}:${each.value.docker_image_tag}"
+      docker_image_name = try(each.value.app_settings.DOCKER_CUSTOM_IMAGE_NAME, "${each.value.docker_image}:${each.value.docker_image_tag}")
     }
 
     always_on                               = try(each.value.always_on, true)
@@ -26,7 +26,7 @@ resource "azurerm_linux_web_app" "app_service" {
   app_settings = merge(
     try(each.value.app_settings, {}),
     {
-      "DOCKER_REGISTRY_SERVER_URL"          = try(each.value.docker_registry_server_url, "https://index.docker.io")
+      "DOCKER_REGISTRY_SERVER_URL"          = try(each.value.docker_registry_server_url, "https://index.docker.io/v1/")
       "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
     }
   )
