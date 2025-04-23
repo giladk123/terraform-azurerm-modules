@@ -26,9 +26,19 @@ resource "azurerm_linux_web_app" "app_service" {
   app_settings = merge(
     try(each.value.app_settings, {}),
     {
-      "DOCKER_REGISTRY_SERVER_URL"          = try(each.value.docker_registry_server_url, "https://index.docker.io/v1/")
       "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
-    }
+    },
+    # Add registry settings if provided
+    try(each.value.registry, null) != null ? {
+      "DOCKER_REGISTRY_SERVER_URL" = each.value.registry.url
+      } : {
+      "DOCKER_REGISTRY_SERVER_URL" = "https://index.docker.io/v1/"
+    },
+    # Add credentials only if username and password are provided
+    try(each.value.registry.username, null) != null && try(each.value.registry.password, null) != null ? {
+      "DOCKER_REGISTRY_SERVER_USERNAME" = each.value.registry.username
+      "DOCKER_REGISTRY_SERVER_PASSWORD" = each.value.registry.password
+    } : {}
   )
 
   identity {
@@ -36,4 +46,4 @@ resource "azurerm_linux_web_app" "app_service" {
   }
 
   tags = try(each.value.tags, {})
-} 
+}
