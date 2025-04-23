@@ -30,15 +30,6 @@ resource "azurerm_linux_web_app" "app_service" {
     }
   )
 
-  dynamic "docker_registry" {
-    for_each = try(each.value.registry, null) != null ? [each.value.registry] : []
-    content {
-      url      = docker_registry.value.url
-      username = try(docker_registry.value.username, null)
-      password = try(docker_registry.value.password, null)
-    }
-  }
-
   identity {
     type = "SystemAssigned"
   }
