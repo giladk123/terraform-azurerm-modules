@@ -9,11 +9,13 @@
     "always_on": true,
     "app_settings": {
       "WEBSITES_PORT": "8000",
-      "DOCKER_ENABLE_CI": "true"
+      "DOCKER_ENABLE_CI": "true",
+      "WEBSITES_CONTAINER_START_TIME_LIMIT": "600"
     },
     "tags": {
       "environment": "production",
-      "app": "python-web"
+      "app": "python-web",
+      "managed_by": "terraform"
     }
   },
   "python_app_2": {

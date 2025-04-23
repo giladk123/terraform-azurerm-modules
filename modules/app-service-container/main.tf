@@ -26,15 +26,18 @@ resource "azurerm_linux_web_app" "app_service" {
   app_settings = merge(
     try(each.value.app_settings, {}),
     {
-      "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false",
-      "DOCKER_REGISTRY_SERVER_URL" = try(each.value.registry.url, "https://index.docker.io/v1/")
-    },
-    # Add credentials only if username and password are provided
-    try(each.value.registry.username, null) != null && try(each.value.registry.password, null) != null ? {
-      "DOCKER_REGISTRY_SERVER_USERNAME" = each.value.registry.username
-      "DOCKER_REGISTRY_SERVER_PASSWORD" = each.value.registry.password
-    } : {}
+      "WEBSITES_ENABLE_APP_SERVICE_STORAGE" = "false"
+    }
   )
+
+  dynamic "docker_registry" {
+    for_each = try(each.value.registry, null) != null ? [each.value.registry] : []
+    content {
+      url      = docker_registry.value.url
+      username = try(docker_registry.value.username, null)
+      password = try(docker_registry.value.password, null)
+    }
+  }
 
   identity {
     type = "SystemAssigned"
