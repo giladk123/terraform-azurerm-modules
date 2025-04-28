@@ -1,7 +1,6 @@
 variable "resource_groups" {
   description = "Map of resource groups to create"
   type = map(object({
-    subscription_id = string
     rg_location    = string
     rg_tags       = map(string)
     name_convention = object({
