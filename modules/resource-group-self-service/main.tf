@@ -1,6 +1,6 @@
 locals {
   resource_groups = var.resource_groups
-  unique_subscriptions = distinct([for rg in local.resource_groups : rg.value.subscription_id])
+  unique_subscriptions = distinct([for rg in local.resource_groups : rg.subscription_id])
 }
 
 # Create resource groups with their respective subscription IDs
