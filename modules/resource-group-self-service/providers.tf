@@ -5,5 +5,5 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = false
     }
   }
-  resource_provider_registrations = "Microsoft.Resources"
+  resource_provider_registrations = "core"
 } 
