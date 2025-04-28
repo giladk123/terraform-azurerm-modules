@@ -11,5 +11,5 @@ resource "azurerm_resource_group" "this" {
   location = each.value.rg_location
   tags     = each.value.rg_tags
 
-  provider = azurerm.aliases[each.value.subscription_id]
+  provider = azurerm.aliases
 } 
