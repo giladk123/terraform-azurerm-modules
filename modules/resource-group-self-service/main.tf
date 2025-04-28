@@ -7,7 +7,9 @@ locals {
 resource "azurerm_resource_group" "this" {
   for_each = local.resource_groups
 
-  name     = each.key
+  name     = "rg-${var.name_convention.region}-${var.name_convention.dbank_idbank_first_letter}-${var.name_convention.env}-${var.name_convention.cmdb_infra}-${var.name_convention.cmdb_project}-${each.key}"
   location = each.value.rg_location
   tags     = each.value.rg_tags
+
+  provider = azurerm.aliases[each.value.subscription_id]
 } 
