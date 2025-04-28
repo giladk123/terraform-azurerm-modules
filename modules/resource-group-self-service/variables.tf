@@ -4,16 +4,12 @@ variable "resource_groups" {
     subscription_id = string
     rg_location    = string
     rg_tags       = map(string)
+    name_convention = object({
+      region                    = string
+      dbank_idbank_first_letter = string
+      env                      = string
+      cmdb_infra               = string
+      cmdb_project             = string
+    })
   }))
-}
-
-variable "name_convention" {
-  description = "Naming convention for resources"
-  type = object({
-    region                    = string
-    dbank_idbank_first_letter = string
-    env                      = string
-    cmdb_infra               = string
-    cmdb_project             = string
-  })
 } 
