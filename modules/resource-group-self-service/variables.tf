@@ -1,8 +1,11 @@
+variable "subscription_id" {
+  description = "The subscription ID to use for the Azure provider"
+  type        = string
+}
+
 variable "resource_groups" {
-  description = "Map of resource groups to create"
+  description = "A map of resource group configurations"
   type = map(object({
-    rg_location    = string
-    rg_tags       = map(string)
     name_convention = object({
       region                    = string
       dbank_idbank_first_letter = string
@@ -10,5 +13,7 @@ variable "resource_groups" {
       cmdb_infra               = string
       cmdb_project             = string
     })
+    rg_location = string
+    rg_tags     = map(string)
   }))
 } 
