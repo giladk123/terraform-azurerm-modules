@@ -9,9 +9,9 @@ variable "resource_groups" {
     name_convention = object({
       region                    = string
       dbank_idbank_first_letter = string
-      env                      = string
-      cmdb_infra               = string
-      cmdb_project             = string
+      env                       = string
+      cmdb_infra                = string
+      cmdb_project              = string
     })
     rg_location = string
     rg_tags     = map(string)
