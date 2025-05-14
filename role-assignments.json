@@ -1,0 +1,24 @@
+{
+  "service_principals": {
+    "app1": {
+      "object_id": "00000000-0000-0000-0000-000000000001",
+      "role_assignments": {
+        "subscription_contributor": {
+          "scope": "/subscriptions/00000000-0000-0000-0000-000000000000",
+          "role_definition_name": "Contributor",
+          "description": "Allow full access to subscription"
+        }
+      }
+    },
+    "app2": {
+      "object_id": "00000000-0000-0000-0000-000000000002",
+      "role_assignments": {
+        "resource_group_reader": {
+          "scope": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/my-resource-group",
+          "role_definition_name": "Reader",
+          "description": "Allow read access to resource group"
+        }
+      }
+    }
+  }
+} 
