@@ -1,0 +1,115 @@
+{
+  "stprodapp001": {
+    "resource_group_name": "rg-storage-prod-001",
+    "location": "eastus",
+    "account_tier": "Standard",
+    "account_replication_type": "GRS",
+    "account_kind": "StorageV2",
+    "access_tier": "Hot",
+    "enable_https_traffic_only": true,
+    "min_tls_version": "TLS1_2",
+    "allow_nested_items_to_be_public": false,
+    "tags": {
+      "environment": "production",
+      "application": "webapp",
+      "cost-center": "IT-001"
+    },
+    "blob_properties": {
+      "enable_versioning": true,
+      "change_feed_enabled": true,
+      "delete_retention_policy": {
+        "enabled": true,
+        "days": 30
+      },
+      "container_delete_retention_policy": {
+        "enabled": true,
+        "days": 7
+      }
+    },
+    "containers": {
+      "uploads": {
+        "container_access_type": "private"
+      },
+      "backups": {
+        "container_access_type": "private",
+        "metadata": {
+          "retention": "90days"
+        }
+      }
+    },
+    "lifecycle_rules": [
+      {
+        "name": "archiveoldbackups",
+        "enabled": true,
+        "blob_types": ["blockBlob"],
+        "base_blob": {
+          "tier_to_cool_after_days": 30,
+          "tier_to_archive_after_days": 90,
+          "delete_after_days": 365
+        }
+      }
+    ]
+  },
+  "stdevdata001": {
+    "resource_group_name": "rg-storage-dev-001",
+    "location": "westus2",
+    "account_tier": "Standard",
+    "account_replication_type": "LRS",
+    "account_kind": "StorageV2",
+    "is_hns_enabled": true,
+    "tags": {
+      "environment": "development",
+      "purpose": "datalake"
+    },
+    "containers": {
+      "raw": {
+        "container_access_type": "private"
+      },
+      "processed": {
+        "container_access_type": "private"
+      }
+    }
+  },
+  "stdevfiles001": {
+    "resource_group_name": "rg-storage-dev-001",
+    "location": "westus2",
+    "account_tier": "Standard",
+    "account_replication_type": "LRS",
+    "large_file_share_enabled": true,
+    "tags": {
+      "environment": "development",
+      "purpose": "fileshare"
+    },
+    "file_shares": {
+      "departmentfiles": {
+        "quota": 5120,
+        "access_tier": "TransactionOptimized"
+      },
+      "projectfiles": {
+        "quota": 2048,
+        "access_tier": "Hot"
+      }
+    }
+  },
+  "ststatic001": {
+    "resource_group_name": "rg-web-prod-001",
+    "location": "eastus",
+    "account_tier": "Standard",
+    "account_replication_type": "LRS",
+    "account_kind": "StorageV2",
+    "static_website": {
+      "enabled": true,
+      "index_document": "index.html",
+      "error_404_document": "404.html"
+    },
+    "tags": {
+      "environment": "production",
+      "purpose": "static-website"
+    },
+    "containers": {
+      "$web": {
+        "container_access_type": "blob"
+      }
+    }
+  }
+} 
