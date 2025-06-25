@@ -229,7 +229,7 @@ resource "azurerm_storage_management_policy" "this" {
           content {
             change_tier_to_cool_after_days_since_creation    = version.value.tier_to_cool_after_days
             change_tier_to_archive_after_days_since_creation = version.value.tier_to_archive_after_days
-            delete_after_days_since_creation_greater_than     = version.value.delete_after_days
+            delete_after_days_since_creation                 = version.value.delete_after_days
           }
         }
       }
