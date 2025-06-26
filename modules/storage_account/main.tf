@@ -55,7 +55,7 @@ resource "azurerm_storage_account" "this" {
 
   # Static website
   dynamic "static_website" {
-    for_each = each.value.static_website != null && each.value.static_website.enabled ? [each.value.static_website] : []
+    for_each = each.value.static_website != null ? (each.value.static_website.enabled ? [each.value.static_website] : []) : []
     content {
       index_document     = static_website.value.index_document
       error_404_document = static_website.value.error_404_document
