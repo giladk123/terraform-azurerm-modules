@@ -14,7 +14,7 @@ module "resource-group" {
 }
 ```
 
-'''terraform
+'''
 output "rg_id" {
   value = module.resource-group.resource_groups["testing"].id
 }
