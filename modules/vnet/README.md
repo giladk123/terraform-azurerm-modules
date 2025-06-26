@@ -6,26 +6,61 @@ locals {
   vnet_settings           = jsondecode(file("./network/vnet.json"))
 }
 
+module "modules_vnet" {
+  source  = "app.terraform.io/hcta-azure-dev/modules/azurerm//modules/vnet"
+  version = "1.0.51"
 
-module "vnet" {
-  source   = "./module/vnet"
-
-  vnets = local.vnet_settings.vnets
+  vnets = {
+    for k, v in local.vnet_settings.vnets : k => merge(v, {
+      resource_group_name = module.resource-group.resource_groups["testing"].name
+    })
+  }
+  name_convention = local.vnet_settings.name_convention
 
 }
+
+
 ```
 
 Output Examples
 
 ```terraform
-
-output "vnet_id" {
-  value = module.vnet.vnet["<vnet name>"].id
+# Subnet outputs
+output "subnet_ids" {
+  description = "Map of subnet names to their IDs"
+  value = {
+    for k, v in module.modules_vnet.subnet : k => v.id
+    if startswith(k, "testing-")
+  }
 }
 
-output "subnet_id" {
-  value = module.vnet.subnet["<vnet name>-<subnet name>"].id
+output "subnet_names" {
+  description = "Map of subnet keys to their names"
+  value = {
+    for k, v in module.modules_vnet.subnet : k => v.name
+    if startswith(k, "testing-")
+  }
 }
+
+output "subnet_address_prefixes" {
+  description = "Map of subnet names to their address prefixes"
+  value = {
+    for k, v in module.modules_vnet.subnet : k => v.address_prefixes
+    if startswith(k, "testing-")
+  }
+}
+
+# All resources output
+output "all_vnets" {
+  description = "All virtual networks managed by this module"
+  value       = module.modules_vnet.vnet
+}
+
+output "all_subnets" {
+  description = "All subnets managed by this module"
+  value       = module.modules_vnet.subnet
+}
+
 ```
 
 JSON Example
@@ -33,30 +68,26 @@ JSON Example
 ```json
 {
     "vnets": {
-        "<vnet name>": {
-            "resource_group_name": "<resource group name>",
+        "testing": {
+            "resource_group_name": "will-be-overridden-by-terraform",
             "location": "westeurope",
             "address_space": ["10.62.252.0/24"],
             "tags": {"environment": "dev"},
             "subnets": [
-                {"name": "<subnet name>", "address_prefix": "10.62.252.0/28"},
-                {"name": "<subnet name>", "address_prefix": "10.62.252.16/28"}
-        ]
-        },
-        "<vnet name>": {
-            "resource_group_name": "<resource group name>",
-            "location": "westeurope",
-            "address_space": ["10.62.253.0/24"],
-            "tags": {"environment": "dev"},
-            "subnets": [
-                {"name": "<subnet name>", "address_prefix": "10.62.253.0/28"},
-                {"name": "<subnet name>", "address_prefix": "10.62.253.16/28"}
-        ]
+                {"name": "subnet-001", "address_prefix": "10.62.252.0/28"},
+                {"name": "subnet-002", "address_prefix": "10.62.252.16/28"}
+            ]
         }
+    },
+    "name_convention": {
+        "region": "we",
+        "dbank_idbank_first_letter": "i",
+        "env": "dev",
+        "cmdb_infra": "aznt",
+        "cmdb_project": "abcd"
     }
 }
 ```
-
 
 ## Requirements
 
