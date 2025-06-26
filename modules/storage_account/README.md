@@ -34,6 +34,7 @@ This module supports the following Azure Storage Account features:
   - Large file shares
   - Managed identity support
   - Infrastructure encryption
+  - Private endpoint connectivity
 
 ## Usage
 
@@ -155,6 +156,24 @@ module "storage_accounts" {
     ],
     "identity": {
       "type": "SystemAssigned"
+    },
+    "private_endpoints": {
+      "blob-pe": {
+        "subnet_id": "/subscriptions/.../subnets/private-endpoint-subnet",
+        "subresource_names": ["blob"],
+        "private_dns_zone_ids": ["/subscriptions/.../privateDnsZones/privatelink.blob.core.windows.net"],
+        "tags": {
+          "service": "blob-storage"
+        }
+      },
+      "file-pe": {
+        "subnet_id": "/subscriptions/.../subnets/private-endpoint-subnet",
+        "subresource_names": ["file"],
+        "private_dns_zone_ids": ["/subscriptions/.../privateDnsZones/privatelink.file.core.windows.net"],
+        "tags": {
+          "service": "file-storage"
+        }
+      }
     }
   },
   "datalakestore001": {
@@ -247,6 +266,43 @@ module "storage_accounts" {
 ]
 ```
 
+#### Private Endpoints
+```json
+"private_endpoints": {
+  "blob-endpoint": {
+    "subnet_id": "/subscriptions/.../subnets/private-endpoint-subnet",
+    "subresource_names": ["blob"],
+    "private_dns_zone_ids": ["/subscriptions/.../privateDnsZones/privatelink.blob.core.windows.net"],
+    "tags": {
+      "purpose": "blob-access"
+    }
+  },
+  "file-endpoint": {
+    "subnet_id": "/subscriptions/.../subnets/private-endpoint-subnet",
+    "subresource_names": ["file"],
+    "private_dns_zone_ids": ["/subscriptions/.../privateDnsZones/privatelink.file.core.windows.net"]
+  }
+}
+```
+
+Private endpoint configuration supports the following options:
+- `subnet_id` (required) - The ID of the subnet where the private endpoint will be created
+- `subresource_names` (required) - List of subresources to connect (blob, file, table, queue, web, dfs)
+- `private_dns_zone_ids` (optional) - List of private DNS zone IDs for automatic DNS registration
+- `private_dns_zone_group_name` (optional) - Name of the private DNS zone group (default: "default")
+- `private_service_connection_name` (optional) - Custom name for the private service connection
+- `is_manual_connection` (optional) - Whether the connection requires manual approval (default: false)
+- `request_message` (optional) - Message for manual connection approval requests
+- `tags` (optional) - Tags to apply to the private endpoint
+
+Common subresource names for storage accounts:
+- `blob` - For blob storage
+- `file` - For file shares
+- `table` - For table storage
+- `queue` - For queue storage
+- `web` - For static websites
+- `dfs` - For Data Lake Storage Gen2
+
 ## Outputs
 
 The module provides the following outputs:
@@ -260,6 +316,8 @@ The module provides the following outputs:
 - `file_shares` - Map of all created file shares
 - `queues` - Map of all created queues
 - `tables` - Map of all created tables
+- `private_endpoints` - Map of all created private endpoints
+- `private_endpoint_network_interfaces` - Map of private endpoint network interface details
 
 ## Example: Accessing Outputs
 
@@ -279,6 +337,16 @@ output "storage_connection_string" {
   value     = module.storage_accounts.primary_connection_strings["storageaccount001"]
   sensitive = true
 }
+
+# Get private endpoint information
+output "storage_private_endpoints" {
+  value = module.storage_accounts.private_endpoints
+}
+
+# Get specific private endpoint network interface
+output "blob_private_endpoint_nic" {
+  value = module.storage_accounts.private_endpoint_network_interfaces["storageaccount001-blob-pe"]
+}
 ```
 
 ## Requirements
@@ -292,4 +360,7 @@ output "storage_connection_string" {
 2. Storage account names must be between 3-24 characters, lowercase letters and numbers only
 3. Some features like NFSv3 have specific requirements (e.g., is_hns_enabled must be true)
 4. Network rules are applied after the storage account is created
-5. When using lifecycle management, ensure blob versioning is enabled if you want to manage versions 
+5. When using lifecycle management, ensure blob versioning is enabled if you want to manage versions
+6. When using private endpoints, consider setting `public_network_access_enabled` to `false` and configuring appropriate network rules
+7. Private endpoints require the subnet to have private endpoint network policies disabled
+8. Each subresource type (blob, file, etc.) requires its own private endpoint 

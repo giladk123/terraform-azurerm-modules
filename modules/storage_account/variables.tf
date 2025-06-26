@@ -110,5 +110,17 @@ variable "storage_accounts" {
       type         = string
       identity_ids = optional(list(string))
     }))
+
+    # Private Endpoints
+    private_endpoints = optional(map(object({
+      subnet_id                            = string
+      private_dns_zone_group_name          = optional(string, "default")
+      private_dns_zone_ids                 = optional(list(string), [])
+      subresource_names                    = list(string)
+      private_service_connection_name      = optional(string)
+      is_manual_connection                 = optional(bool, false)
+      request_message                      = optional(string)
+      tags                                 = optional(map(string), {})
+    })), {})
   }))
 } 

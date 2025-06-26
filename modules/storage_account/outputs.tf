@@ -115,4 +115,34 @@ output "tables" {
       storage_account_name = table.storage_account_name
     }
   }
+}
+
+output "private_endpoints" {
+  description = "Map of all created private endpoints"
+  value = {
+    for key, pe in azurerm_private_endpoint.this : key => {
+      id                = pe.id
+      name              = pe.name
+      location          = pe.location
+      subnet_id         = pe.subnet_id
+      network_interface = pe.network_interface
+      custom_dns_configs = pe.custom_dns_configs
+      private_dns_zone_configs = pe.private_dns_zone_configs
+      private_service_connection = {
+        name                           = pe.private_service_connection[0].name
+        private_connection_resource_id = pe.private_service_connection[0].private_connection_resource_id
+        subresource_names              = pe.private_service_connection[0].subresource_names
+      }
+    }
+  }
+}
+
+output "private_endpoint_network_interfaces" {
+  description = "Map of private endpoint network interface details"
+  value = {
+    for key, pe in azurerm_private_endpoint.this : key => {
+      id = pe.network_interface[0].id
+      name = pe.network_interface[0].name
+    }
+  }
 } 

@@ -9,7 +9,7 @@ resource "azurerm_storage_account" "this" {
   account_replication_type        = each.value.account_replication_type
   account_kind                    = each.value.account_kind
   access_tier                     = each.value.access_tier
-  https_traffic_only_enabled      = each.value.enable_https_traffic_only
+  enable_https_traffic_only       = each.value.enable_https_traffic_only
   min_tls_version                 = each.value.min_tls_version
   allow_nested_items_to_be_public = each.value.allow_nested_items_to_be_public
   shared_access_key_enabled       = each.value.shared_access_key_enabled
@@ -235,4 +235,62 @@ resource "azurerm_storage_management_policy" "this" {
       }
     }
   }
+}
+
+# Private Endpoints
+locals {
+  # Flatten private endpoints for all storage accounts
+  private_endpoints = flatten([
+    for sa_key, sa_value in var.storage_accounts : [
+      for pe_key, pe_value in sa_value.private_endpoints : {
+        storage_account_key             = sa_key
+        private_endpoint_key            = pe_key
+        subnet_id                       = pe_value.subnet_id
+        private_dns_zone_group_name     = pe_value.private_dns_zone_group_name
+        private_dns_zone_ids            = pe_value.private_dns_zone_ids
+        subresource_names               = pe_value.subresource_names
+        private_service_connection_name = pe_value.private_service_connection_name
+        is_manual_connection            = pe_value.is_manual_connection
+        request_message                 = pe_value.request_message
+        tags                            = pe_value.tags
+        location                        = sa_value.location
+        resource_group_name             = sa_value.resource_group_name
+      }
+    ]
+  ])
+}
+
+resource "azurerm_private_endpoint" "this" {
+  for_each = {
+    for pe in local.private_endpoints : 
+    "${pe.storage_account_key}-${pe.private_endpoint_key}" => pe
+  }
+
+  name                = "${each.value.private_endpoint_key}-pe"
+  location            = each.value.location
+  resource_group_name = each.value.resource_group_name
+  subnet_id           = each.value.subnet_id
+
+  private_service_connection {
+    name                           = coalesce(
+      each.value.private_service_connection_name,
+      "${each.value.private_endpoint_key}-psc"
+    )
+    private_connection_resource_id = azurerm_storage_account.this[each.value.storage_account_key].id
+    subresource_names              = each.value.subresource_names
+    is_manual_connection           = each.value.is_manual_connection
+    request_message                = each.value.is_manual_connection ? each.value.request_message : null
+  }
+
+  dynamic "private_dns_zone_group" {
+    for_each = length(each.value.private_dns_zone_ids) > 0 ? [1] : []
+    content {
+      name                 = each.value.private_dns_zone_group_name
+      private_dns_zone_ids = each.value.private_dns_zone_ids
+    }
+  }
+
+  tags = each.value.tags
+
+  depends_on = [azurerm_storage_account.this]
 } 
