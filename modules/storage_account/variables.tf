@@ -7,7 +7,7 @@ variable "storage_accounts" {
     account_replication_type        = string
     account_kind                    = optional(string, "StorageV2")
     access_tier                     = optional(string, "Hot")
-    https_traffic_only_enabled      = optional(bool, true)
+    enable_https_traffic_only       = optional(bool, true)
     min_tls_version                 = optional(string, "TLS1_2")
     allow_nested_items_to_be_public = optional(bool, false)
     shared_access_key_enabled       = optional(bool, true)
