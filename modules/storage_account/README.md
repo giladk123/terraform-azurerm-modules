@@ -82,7 +82,7 @@ module "storage_accounts" {
     "account_replication_type": "GRS",
     "account_kind": "StorageV2",
     "access_tier": "Hot",
-    "enable_https_traffic_only": true,
+    "https_traffic_only_enabled": true,
     "min_tls_version": "TLS1_2",
     "allow_nested_items_to_be_public": false,
     "shared_access_key_enabled": true,
@@ -206,7 +206,7 @@ module "storage_accounts" {
 |-------|---------|-------------|
 | `account_kind` | "StorageV2" | Kind of storage account |
 | `access_tier` | "Hot" | Access tier for BlobStorage accounts |
-| `enable_https_traffic_only` | true | Enforce HTTPS traffic only |
+| `https_traffic_only_enabled` | true | Enforce HTTPS traffic only |
 | `min_tls_version` | "TLS1_2" | Minimum TLS version |
 | `allow_nested_items_to_be_public` | false | Allow public access to blobs |
 | `shared_access_key_enabled` | true | Enable shared access keys |
