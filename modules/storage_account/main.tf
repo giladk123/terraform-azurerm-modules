@@ -9,7 +9,7 @@ resource "azurerm_storage_account" "this" {
   account_replication_type        = each.value.account_replication_type
   account_kind                    = each.value.account_kind
   access_tier                     = each.value.access_tier
-  enable_https_traffic_only       = each.value.enable_https_traffic_only
+  enable_https_traffic_only       = each.value.https_traffic_only_enabled
   min_tls_version                 = each.value.min_tls_version
   allow_nested_items_to_be_public = each.value.allow_nested_items_to_be_public
   shared_access_key_enabled       = each.value.shared_access_key_enabled
