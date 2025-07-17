@@ -16,6 +16,7 @@ variable "storage_accounts" {
     large_file_share_enabled        = optional(bool, false)
     public_network_access_enabled   = optional(bool, true)
     tags                            = optional(map(string), {})
+    cross_tenant_replication_enabled = optional(bool, true)
 
     # Blob properties
     blob_properties = optional(object({

@@ -17,6 +17,7 @@ resource "azurerm_storage_account" "this" {
   nfsv3_enabled                   = each.value.nfsv3_enabled
   large_file_share_enabled        = each.value.large_file_share_enabled
   public_network_access_enabled   = each.value.public_network_access_enabled
+  cross_tenant_replication_enabled = try(each.value.cross_tenant_replication_enabled, true)
 
   # Blob properties
   dynamic "blob_properties" {
