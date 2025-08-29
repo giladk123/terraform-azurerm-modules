@@ -28,10 +28,11 @@ Install-ADDSForest `
   -SysvolPath 'C:\Windows\SYSVOL' `
   -LogPath 'C:\Windows\NTDS' `
   -InstallDns:$true `
+  -NoRebootOnCompletion:$true `
   -Force:$true `
   -SafeModeAdministratorPassword (ConvertTo-SecureString $safe_mode_password -AsPlainText -Force)
 
-Start-Sleep -Seconds 30
+Start-Sleep -Seconds 10
 
 if ($create_user -and $user_username -and $user_password) {
   Import-Module ActiveDirectory
@@ -40,5 +41,9 @@ if ($create_user -and $user_username -and $user_password) {
   New-ADUser -Name $user_username -SamAccountName $user_username -UserPrincipalName "$user_username@$domain_fqdn" `
     -GivenName $user_given_name -Surname $user_surname -Enabled $true -AccountPassword $securePass -Path $cn
 }
+
+# Queue a reboot in the background and return success so the extension doesn't fail on restart
+Start-Process -FilePath "powershell.exe" -ArgumentList "-NoProfile -WindowStyle Hidden -Command Start-Sleep -Seconds 5; Restart-Computer -Force" -WindowStyle Hidden | Out-Null
+exit 0
 
 
