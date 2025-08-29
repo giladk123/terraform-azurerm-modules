@@ -34,6 +34,10 @@ variable "domain" {
     safe_mode_password  = string
     site_name           = optional(string, "Default-First-Site-Name")
   })
+  validation {
+    condition     = length(trim(var.domain.safe_mode_password)) > 0
+    error_message = "domain.safe_mode_password must be non-empty."
+  }
 }
 
 variable "ldap_user" {

@@ -14,6 +14,10 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+if ([string]::IsNullOrWhiteSpace($safe_mode_password)) {
+  Write-Error "safe_mode_password is empty"
+}
+
 Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
 
 Import-Module ADDSDeployment
