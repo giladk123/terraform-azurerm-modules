@@ -1,0 +1,109 @@
+{
+  "name_convention": {
+    "region": "weu",
+    "dbank_idbank_first_letter": "x",
+    "env": "d",
+    "cmdb_infra": "app",
+    "cmdb_project": "ldappg"
+  },
+  "tags": {
+    "project": "ldappg",
+    "owner": "platform"
+  },
+  "resource_group": {
+    "name": "rg-ldappg",
+    "location": "westeurope"
+  },
+  "vnet": {
+    "name": "vnet-ldappg",
+    "address_space": ["10.50.0.0/16"],
+    "subnets": {
+      "ad": { "prefix": "10.50.1.0/24" },
+      "pg": { "prefix": "10.50.2.0/24" }
+    }
+  },
+  "ad": {
+    "vm": {
+      "size": "Standard_B2ms",
+      "admin_username": "azureadmin",
+      "admin_password": "ChangeM3Now!",
+      "create_public_ip": false
+    },
+    "domain": {
+      "domain_fqdn": "corp.contoso.local",
+      "netbios_name": "CORP",
+      "safe_mode_password": "DsrM0de!Pass"
+    },
+    "ldap_user": {
+      "create": true,
+      "username": "pgbind",
+      "password": "BindUserPa55!",
+      "ou_dn": "CN=Users",
+      "given_name": "PG",
+      "surname": "Bind"
+    },
+    "nsg": {
+      "security_rules": [
+        {
+          "name": "allow-rdp",
+          "priority": 100,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "source_port_range": "*",
+          "destination_port_range": "3389",
+          "source_address_prefix": "*",
+          "destination_address_prefix": "*"
+        },
+        {
+          "name": "allow-ldap",
+          "priority": 110,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "source_port_range": "*",
+          "destination_port_range": "389",
+          "source_address_prefix": "*",
+          "destination_address_prefix": "*"
+        }
+      ]
+    }
+  },
+  "postgres": {
+    "vm": {
+      "size": "Standard_B2s",
+      "admin_username": "azureadmin",
+      "ssh_public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOM59X2QSi9HIirM0OoVSApxOjfrvxKzqm84ebiihu45 you@example.com"
+    },
+    "postgres": {
+      "version": "16.7",
+      "db_name": "appdb",
+      "db_owner": "appowner",
+      "db_owner_password": "AppOwnerPass!",
+      "listen_addresses": "*",
+      "port": 5432
+    },
+    "ldap": {
+      "bind_dn": "CN=pgbind,CN=Users,DC=corp,DC=contoso,DC=local",
+      "bind_password": "BindUserPa55!",
+      "search_base": "DC=corp,DC=contoso,DC=local"
+    },
+    "nsg": {
+      "security_rules": [
+        {
+          "name": "allow-postgres",
+          "priority": 100,
+          "direction": "Inbound",
+          "access": "Allow",
+          "protocol": "Tcp",
+          "source_port_range": "*",
+          "destination_port_range": "5432",
+          "source_address_prefix": "*",
+          "destination_address_prefix": "*"
+        }
+      ]
+    }
+  }
+}
+
+
