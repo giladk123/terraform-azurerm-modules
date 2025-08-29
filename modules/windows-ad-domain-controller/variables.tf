@@ -18,6 +18,7 @@ variable "vm" {
     admin_username              = string
     admin_password              = string
     subnet_id                   = string
+    computer_name               = optional(string)
     private_ip_address          = optional(string)
     create_public_ip            = optional(bool, false)
     public_ip_allocation_method = optional(string, "Dynamic")

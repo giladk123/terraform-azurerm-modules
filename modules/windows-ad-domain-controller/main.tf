@@ -77,6 +77,7 @@ resource "azurerm_windows_virtual_machine" "dc" {
   provision_vm_agent        = true
   enable_automatic_updates  = true
   patch_mode                = "AutomaticByOS"
+  computer_name             = coalesce(try(var.vm.computer_name, null), "WADDC01")
 
   custom_data = local.dc_custom_data
 
