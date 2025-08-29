@@ -1,15 +1,14 @@
-param(
-  [string]$domain_fqdn,
-  [string]$netbios_name,
-  [string]$safe_mode_password,
-  [string]$site_name,
-  [bool]$create_user,
-  [string]$user_username,
-  [string]$user_password,
-  [string]$user_ou_dn,
-  [string]$user_given_name,
-  [string]$user_surname
-)
+${null} = $PSStyle # no-op to avoid template engine confusion
+$domain_fqdn      = "${domain_fqdn}"
+$netbios_name     = "${netbios_name}"
+$safe_mode_password = "${safe_mode_password}"
+$site_name        = "${site_name}"
+$create_user      = ${create_user}
+$user_username    = "${user_username}"
+$user_password    = "${user_password}"
+$user_ou_dn       = "${user_ou_dn}"
+$user_given_name  = "${user_given_name}"
+$user_surname     = "${user_surname}"
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
