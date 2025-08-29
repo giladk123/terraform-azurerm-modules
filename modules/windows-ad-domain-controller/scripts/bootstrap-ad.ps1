@@ -1,4 +1,3 @@
-${null} = $PSStyle # no-op to avoid template engine confusion
 $domain_fqdn      = "${domain_fqdn}"
 $netbios_name     = "${netbios_name}"
 $safe_mode_password = "${safe_mode_password}"
