@@ -35,11 +35,11 @@ Install-ADDSForest `
 Start-Sleep -Seconds 10
 
 if ($create_user -and $user_username -and $user_password) {
-  $postScript = @"
+  $postScript = @'
 $ErrorActionPreference = 'Stop'
 Import-Module ActiveDirectory
 function Wait-ADReady {
-  param([int]$timeoutSeconds = 900)
+  $timeoutSeconds = 900
   $elapsed = 0
   while ($elapsed -lt $timeoutSeconds) {
     try { Get-ADDomain | Out-Null; return }
@@ -48,11 +48,11 @@ function Wait-ADReady {
   throw 'Active Directory not ready after timeout.'
 }
 Wait-ADReady
-$securePass = ConvertTo-SecureString '$user_password' -AsPlainText -Force
-$containerPath = '$user_ou_dn' + ',DC=' + ('${domain_fqdn}' -split '\\.' -join ',DC=')
-New-ADUser -Name '$user_username' -SamAccountName '$user_username' -UserPrincipalName '$user_username@${domain_fqdn}' `
-  -GivenName '$user_given_name' -Surname '$user_surname' -Enabled $true -AccountPassword $securePass -Path $containerPath
-"@
+$securePass = ConvertTo-SecureString '{0}' -AsPlainText -Force
+$containerPath = '{1}' + ',DC=' + ('{2}' -split '\.' -join ',DC=')
+New-ADUser -Name '{3}' -SamAccountName '{3}' -UserPrincipalName '{3}@{2}' `
+  -GivenName '{4}' -Surname '{5}' -Enabled $true -AccountPassword $securePass -Path $containerPath
+'@ -f $user_password, $user_ou_dn, $domain_fqdn, $user_username, $user_given_name, $user_surname
   $postPath = 'C:\\AzureData\\PostAD.ps1'
   $postScript | Out-File -FilePath $postPath -Encoding ASCII -Force
   New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\RunOnce' -Name 'PostADSetup' -Value "PowerShell.exe -ExecutionPolicy Bypass -File $postPath" -PropertyType String -Force | Out-Null
