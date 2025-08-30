@@ -34,6 +34,24 @@ echo "Installing PostgreSQL version ${pg_version} and LDAP utilities..."
 apt-get install -y postgresql-${pg_version} ldap-utils
 echo "PostgreSQL installation completed successfully"
 
+# First, start PostgreSQL with default configuration
+echo "Starting PostgreSQL with default configuration..."
+systemctl enable postgresql
+systemctl start postgresql
+
+# Wait for PostgreSQL to be ready with default config
+echo "Waiting for PostgreSQL to start with default configuration..."
+for i in {1..30}; do
+    if sudo -u postgres psql -c "SELECT 1;" >/dev/null 2>&1; then
+        echo "PostgreSQL is running with default configuration"
+        break
+    fi
+    echo "Waiting for PostgreSQL to start... ($i/30)"
+    sleep 2
+done
+
+# Now configure PostgreSQL
+echo "Configuring PostgreSQL..."
 pg_hba="/etc/postgresql/${pg_version}/main/pg_hba.conf"
 postgresql_conf="/etc/postgresql/${pg_version}/main/postgresql.conf"
 
@@ -45,14 +63,9 @@ cat >> "$pg_hba" <<EOF
 host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapprefix= uid= ldapsuffix=,${ldap_search_base} ldapbasedn=${ldap_search_base} ldapbinddn=${ldap_bind_dn} ldapbindpasswd=${ldap_bind_password}
 EOF
 
-echo "Enabling and starting PostgreSQL service..."
-systemctl enable postgresql
-systemctl restart postgresql
-
-# Also explicitly start the PostgreSQL 16 cluster
-echo "Starting PostgreSQL 16 cluster..."
-systemctl enable postgresql@16-main
-systemctl start postgresql@16-main
+# Restart PostgreSQL to apply configuration
+echo "Restarting PostgreSQL to apply configuration..."
+sudo -u postgres pg_ctlcluster ${pg_version} main restart
 
 echo "Waiting for PostgreSQL to be ready..."
 # Wait for PostgreSQL to be ready (up to 60 seconds)
