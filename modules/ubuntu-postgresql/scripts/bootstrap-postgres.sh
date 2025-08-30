@@ -63,7 +63,7 @@ cp "$pg_hba" "$pg_hba.backup"
 
 # Add LDAP configuration
 echo "# LDAP auth via AD" >> "$pg_hba"
-echo "host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapbasedn=\"${ldap_search_base}\" ldapbinddn=\"${ldap_bind_dn}\" ldapbindpasswd=\"${ldap_bind_password}\"" >> "$pg_hba"
+echo "host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapbasedn=\"${ldap_search_base}\" ldapbinddn=\"${ldap_bind_dn}\" ldapbindpasswd=\"${ldap_bind_password}\" ldapsearchattribute=sAMAccountName" >> "$pg_hba"
 
 # Restart PostgreSQL to apply configuration
 echo "Restarting PostgreSQL to apply configuration..."
@@ -125,6 +125,29 @@ if ! sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw ${db_name}; then
     sudo -u postgres psql -v ON_ERROR_STOP=1 -c "GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_owner};"
 else
     echo "Database ${db_name} already exists"
+fi
+
+# Create PostgreSQL roles for LDAP users (without passwords - they'll auth via LDAP)
+echo "Creating PostgreSQL roles for LDAP users..."
+
+# Create role for azureadmin (AD admin user)
+if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='azureadmin'" | grep -q 1; then
+    echo "Creating LDAP role for azureadmin..."
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "CREATE ROLE azureadmin LOGIN;"
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "GRANT CONNECT ON DATABASE ${db_name} TO azureadmin;"
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "GRANT USAGE ON SCHEMA public TO azureadmin;"
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "GRANT CREATE ON SCHEMA public TO azureadmin;"
+else
+    echo "LDAP role azureadmin already exists"
+fi
+
+# Create role for pgbind user (if they need database access)
+if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='pgbind'" | grep -q 1; then
+    echo "Creating LDAP role for pgbind..."
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "CREATE ROLE pgbind LOGIN;"
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "GRANT CONNECT ON DATABASE ${db_name} TO pgbind;"
+else
+    echo "LDAP role pgbind already exists"
 fi
 
 echo "PostgreSQL bootstrap script completed successfully at $(date)"
