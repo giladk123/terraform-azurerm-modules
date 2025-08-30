@@ -59,7 +59,7 @@ sed -i "s/^#\?listen_addresses.*/listen_addresses = '${listen_addresses}'/" "$po
 sed -i "s/^#\?port.*/port = ${port}/" "$postgresql_conf"
 
 # Backup original pg_hba.conf
-cp "$pg_hba" "${pg_hba}.backup"
+cp "$pg_hba" "$pg_hba.backup"
 
 # Add LDAP configuration
 echo "# LDAP auth via AD" >> "$pg_hba"
