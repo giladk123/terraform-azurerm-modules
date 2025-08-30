@@ -65,25 +65,24 @@ cp "$pg_hba" "$pg_hba.backup"
 echo "# LDAP auth via AD" >> "$pg_hba"
 echo "host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapbasedn=\"${ldap_search_base}\" ldapbinddn=\"${ldap_bind_dn}\" ldapbindpasswd=\"${ldap_bind_password}\"" >> "$pg_hba"
 
-# Test configuration before restarting
-echo "Testing PostgreSQL configuration..."
-if ! sudo -u postgres /usr/lib/postgresql/${pg_version}/bin/postgres --config-file="$postgresql_conf" --check-config >/dev/null 2>&1; then
-    echo "ERROR: PostgreSQL configuration has syntax errors"
-    echo "Restoring backup configuration..."
-    cp "$pg_hba.backup" "$pg_hba"
-    exit 1
-fi
-
 # Restart PostgreSQL to apply configuration
 echo "Restarting PostgreSQL to apply configuration..."
 systemctl restart postgresql@${pg_version}-main
 
-# If restart fails, restore backup and retry
-if [ $? -ne 0 ]; then
-    echo "Restart failed, restoring backup configuration..."
+# Test if restart was successful by checking if we can connect
+sleep 3
+if ! sudo -u postgres psql -c "SELECT 1;" >/dev/null 2>&1; then
+    echo "Restart failed or PostgreSQL not responding, restoring backup configuration..."
     cp "$pg_hba.backup" "$pg_hba"
     systemctl restart postgresql@${pg_version}-main
-    echo "PostgreSQL restarted with backup configuration"
+    sleep 3
+    if sudo -u postgres psql -c "SELECT 1;" >/dev/null 2>&1; then
+        echo "PostgreSQL restarted successfully with backup configuration"
+    else
+        echo "ERROR: PostgreSQL failed to start even with backup configuration"
+        systemctl status postgresql@${pg_version}-main
+        exit 1
+    fi
 fi
 
 echo "Waiting for PostgreSQL to be ready..."
