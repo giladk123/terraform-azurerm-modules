@@ -109,18 +109,18 @@ if ! sudo -u postgres psql -c "SELECT 1;" >/dev/null 2>&1; then
 fi
 
 echo "Creating database and user..."
-sudo -u postgres psql -v ON_ERROR_STOP=1 <<SQL
-DO $$
-BEGIN
-   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${db_owner}') THEN
-      CREATE ROLE ${db_owner} LOGIN PASSWORD '${db_owner_password}';
-   END IF;
-END
-$$;
 
+# Create user if it doesn't exist
+sudo -u postgres psql -v ON_ERROR_STOP=1 -c "
+SELECT 'CREATE ROLE ${db_owner} LOGIN PASSWORD ''${db_owner_password}''' 
+WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${db_owner}')\\gexec
+"
+
+# Create database
+sudo -u postgres psql -v ON_ERROR_STOP=1 -c "
 CREATE DATABASE ${db_name} OWNER ${db_owner};
 GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_owner};
-SQL
+"
 
 echo "PostgreSQL bootstrap script completed successfully at $(date)"
 
