@@ -70,7 +70,7 @@ echo "Testing PostgreSQL configuration..."
 if ! sudo -u postgres /usr/lib/postgresql/${pg_version}/bin/postgres --config-file="$postgresql_conf" --check-config >/dev/null 2>&1; then
     echo "ERROR: PostgreSQL configuration has syntax errors"
     echo "Restoring backup configuration..."
-    cp "${pg_hba}.backup" "$pg_hba"
+    cp "$pg_hba.backup" "$pg_hba"
     exit 1
 fi
 
@@ -81,7 +81,7 @@ systemctl restart postgresql@${pg_version}-main
 # If restart fails, restore backup and retry
 if [ $? -ne 0 ]; then
     echo "Restart failed, restoring backup configuration..."
-    cp "${pg_hba}.backup" "$pg_hba"
+    cp "$pg_hba.backup" "$pg_hba"
     systemctl restart postgresql@${pg_version}-main
     echo "PostgreSQL restarted with backup configuration"
 fi
