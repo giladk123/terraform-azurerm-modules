@@ -61,25 +61,9 @@ sed -i "s/^#\?port.*/port = ${port}/" "$postgresql_conf"
 # Backup original pg_hba.conf
 cp "$pg_hba" "$pg_hba.backup"
 
-# Add LDAP configuration BEFORE existing host rules
-# Create a temporary file with LDAP rules first
-temp_hba=$(mktemp)
-
-# Write header comments first
-head -n 90 "$pg_hba" > "$temp_hba"
-
 # Add LDAP configuration
-echo "" >> "$temp_hba"
-echo "# LDAP authentication for Active Directory users" >> "$temp_hba"
-echo "# This must come BEFORE other host rules" >> "$temp_hba"
-echo "host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapbasedn=\"${ldap_search_base}\" ldapbinddn=\"${ldap_bind_dn}\" ldapbindpasswd=\"${ldap_bind_password}\" ldapsearchattribute=sAMAccountName" >> "$temp_hba"
-echo "" >> "$temp_hba"
-
-# Add the rest of the original file (the actual host rules)
-tail -n +91 "$pg_hba" >> "$temp_hba"
-
-# Replace the original file
-mv "$temp_hba" "$pg_hba"
+echo "# LDAP auth via AD" >> "$pg_hba"
+echo "host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapbasedn=\"${ldap_search_base}\" ldapbinddn=\"${ldap_bind_dn}\" ldapbindpasswd=\"${ldap_bind_password}\" ldapsearchattribute=sAMAccountName" >> "$pg_hba"
 
 # Restart PostgreSQL to apply configuration
 echo "Restarting PostgreSQL to apply configuration..."
