@@ -28,7 +28,7 @@ variable "vm" {
 variable "postgres" {
   description = "PostgreSQL configuration."
   type = object({
-    version           = optional(string, "16.7")
+    version           = optional(string, "16")
     db_name           = optional(string, "appdb")
     db_owner          = optional(string, "appowner")
     db_owner_password = optional(string)

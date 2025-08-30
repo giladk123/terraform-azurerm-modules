@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Enable logging for debugging
+exec > >(tee /var/log/bootstrap-postgres.log) 2>&1
+echo "Starting PostgreSQL bootstrap script at $(date)"
+
 pg_version="${pg_version}"
 db_name="${db_name}"
 db_owner="${db_owner}"
@@ -14,15 +18,21 @@ ldap_search_base="${ldap_search_base}"
 ldap_server_host="${ldap_server_host}"
 
 export DEBIAN_FRONTEND=noninteractive
+echo "Updating package lists..."
 apt-get update -y
+echo "Installing prerequisites..."
 apt-get install -y wget curl ca-certificates gnupg lsb-release
 
 # Add PGDG repository to ensure requested PostgreSQL version is available
+echo "Adding PostgreSQL official repository..."
 install -d /usr/share/keyrings
 curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /usr/share/keyrings/postgresql.gpg
 echo "deb [signed-by=/usr/share/keyrings/postgresql.gpg] http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+echo "Updating package lists after adding PostgreSQL repo..."
 apt-get update -y
+echo "Installing PostgreSQL version ${pg_version} and LDAP utilities..."
 apt-get install -y postgresql-${pg_version} ldap-utils
+echo "PostgreSQL installation completed successfully"
 
 pg_hba="/etc/postgresql/${pg_version}/main/pg_hba.conf"
 postgresql_conf="/etc/postgresql/${pg_version}/main/postgresql.conf"
@@ -38,6 +48,7 @@ EOF
 systemctl enable postgresql
 systemctl restart postgresql
 
+echo "Creating database and user..."
 sudo -u postgres psql -v ON_ERROR_STOP=1 <<SQL
 DO $$
 BEGIN
@@ -50,5 +61,7 @@ $$;
 CREATE DATABASE ${db_name} OWNER ${db_owner};
 GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_owner};
 SQL
+
+echo "PostgreSQL bootstrap script completed successfully at $(date)"
 
 
