@@ -110,17 +110,22 @@ fi
 
 echo "Creating database and user..."
 
-# Create user if it doesn't exist
-sudo -u postgres psql -v ON_ERROR_STOP=1 -c "
-SELECT 'CREATE ROLE ${db_owner} LOGIN PASSWORD ''${db_owner_password}''' 
-WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${db_owner}')\\gexec
-"
+# Check if user exists and create if not
+if ! sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='${db_owner}'" | grep -q 1; then
+    echo "Creating user ${db_owner}..."
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "CREATE ROLE ${db_owner} LOGIN PASSWORD '${db_owner_password}';"
+else
+    echo "User ${db_owner} already exists"
+fi
 
-# Create database
-sudo -u postgres psql -v ON_ERROR_STOP=1 -c "
-CREATE DATABASE ${db_name} OWNER ${db_owner};
-GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_owner};
-"
+# Check if database exists and create if not
+if ! sudo -u postgres psql -lqt | cut -d \| -f 1 | grep -qw ${db_name}; then
+    echo "Creating database ${db_name}..."
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "CREATE DATABASE ${db_name} OWNER ${db_owner};"
+    sudo -u postgres psql -v ON_ERROR_STOP=1 -c "GRANT ALL PRIVILEGES ON DATABASE ${db_name} TO ${db_owner};"
+else
+    echo "Database ${db_name} already exists"
+fi
 
 echo "PostgreSQL bootstrap script completed successfully at $(date)"
 
