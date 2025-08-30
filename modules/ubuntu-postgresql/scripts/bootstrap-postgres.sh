@@ -65,7 +65,7 @@ EOF
 
 # Restart PostgreSQL to apply configuration
 echo "Restarting PostgreSQL to apply configuration..."
-sudo -u postgres pg_ctlcluster ${pg_version} main restart
+systemctl restart postgresql@${pg_version}-main
 
 echo "Waiting for PostgreSQL to be ready..."
 # Wait for PostgreSQL to be ready (up to 60 seconds)
