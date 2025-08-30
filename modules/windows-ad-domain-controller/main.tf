@@ -92,7 +92,7 @@ resource "azurerm_virtual_machine_extension" "ad_prereqs" {
   type_handler_version = "1.10"
 
   protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -Command \"Copy-Item C:\\AzureData\\CustomData.bin C:\\AzureData\\CustomData.ps1; powershell -ExecutionPolicy Bypass -File C:\\AzureData\\CustomData.ps1\""
+    commandToExecute = "powershell -ExecutionPolicy Bypass -Command \"$dst='C:\\Windows\\Temp\\CustomData.ps1'; Get-Content C:\\AzureData\\CustomData.bin | Set-Content $dst -Encoding ascii; powershell -ExecutionPolicy Bypass -File $dst\""
   })
 }
 
