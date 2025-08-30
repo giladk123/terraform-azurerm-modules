@@ -45,8 +45,27 @@ cat >> "$pg_hba" <<EOF
 host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapprefix= uid= ldapsuffix=,${ldap_search_base} ldapbasedn=${ldap_search_base} ldapbinddn=${ldap_bind_dn} ldapbindpasswd=${ldap_bind_password}
 EOF
 
+echo "Enabling and starting PostgreSQL service..."
 systemctl enable postgresql
 systemctl restart postgresql
+
+echo "Waiting for PostgreSQL to be ready..."
+# Wait for PostgreSQL to be ready (up to 60 seconds)
+for i in {1..60}; do
+    if sudo -u postgres psql -c "SELECT 1;" >/dev/null 2>&1; then
+        echo "PostgreSQL is ready!"
+        break
+    fi
+    echo "Waiting for PostgreSQL to start... ($i/60)"
+    sleep 1
+done
+
+# Final check
+if ! sudo -u postgres psql -c "SELECT 1;" >/dev/null 2>&1; then
+    echo "ERROR: PostgreSQL failed to start properly"
+    systemctl status postgresql
+    exit 1
+fi
 
 echo "Creating database and user..."
 sudo -u postgres psql -v ON_ERROR_STOP=1 <<SQL
