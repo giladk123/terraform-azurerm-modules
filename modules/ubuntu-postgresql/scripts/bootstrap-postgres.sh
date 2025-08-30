@@ -58,14 +58,33 @@ postgresql_conf="/etc/postgresql/${pg_version}/main/postgresql.conf"
 sed -i "s/^#\?listen_addresses.*/listen_addresses = '${listen_addresses}'/" "$postgresql_conf"
 sed -i "s/^#\?port.*/port = ${port}/" "$postgresql_conf"
 
-cat >> "$pg_hba" <<EOF
-# LDAP auth via AD
-host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapprefix= uid= ldapsuffix=,${ldap_search_base} ldapbasedn=${ldap_search_base} ldapbinddn=${ldap_bind_dn} ldapbindpasswd=${ldap_bind_password}
-EOF
+# Backup original pg_hba.conf
+cp "$pg_hba" "${pg_hba}.backup"
+
+# Add LDAP configuration
+echo "# LDAP auth via AD" >> "$pg_hba"
+echo "host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapprefix= uid= ldapsuffix=,${ldap_search_base} ldapbasedn=${ldap_search_base} ldapbinddn=${ldap_bind_dn} ldapbindpasswd=${ldap_bind_password}" >> "$pg_hba"
+
+# Test configuration before restarting
+echo "Testing PostgreSQL configuration..."
+if ! sudo -u postgres /usr/lib/postgresql/${pg_version}/bin/postgres --config-file="$postgresql_conf" --check-config >/dev/null 2>&1; then
+    echo "ERROR: PostgreSQL configuration has syntax errors"
+    echo "Restoring backup configuration..."
+    cp "${pg_hba}.backup" "$pg_hba"
+    exit 1
+fi
 
 # Restart PostgreSQL to apply configuration
 echo "Restarting PostgreSQL to apply configuration..."
 systemctl restart postgresql@${pg_version}-main
+
+# If restart fails, restore backup and retry
+if [ $? -ne 0 ]; then
+    echo "Restart failed, restoring backup configuration..."
+    cp "${pg_hba}.backup" "$pg_hba"
+    systemctl restart postgresql@${pg_version}-main
+    echo "PostgreSQL restarted with backup configuration"
+fi
 
 echo "Waiting for PostgreSQL to be ready..."
 # Wait for PostgreSQL to be ready (up to 60 seconds)
