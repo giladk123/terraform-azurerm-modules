@@ -49,6 +49,11 @@ echo "Enabling and starting PostgreSQL service..."
 systemctl enable postgresql
 systemctl restart postgresql
 
+# Also explicitly start the PostgreSQL 16 cluster
+echo "Starting PostgreSQL 16 cluster..."
+systemctl enable postgresql@16-main
+systemctl start postgresql@16-main
+
 echo "Waiting for PostgreSQL to be ready..."
 # Wait for PostgreSQL to be ready (up to 60 seconds)
 for i in {1..60}; do
@@ -63,7 +68,12 @@ done
 # Final check
 if ! sudo -u postgres psql -c "SELECT 1;" >/dev/null 2>&1; then
     echo "ERROR: PostgreSQL failed to start properly"
+    echo "Main postgresql service status:"
     systemctl status postgresql
+    echo "PostgreSQL 16 cluster status:"
+    systemctl status postgresql@16-main
+    echo "Checking if cluster is running manually:"
+    sudo -u postgres pg_lsclusters
     exit 1
 fi
 
