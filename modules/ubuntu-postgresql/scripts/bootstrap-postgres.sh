@@ -63,7 +63,7 @@ cp "$pg_hba" "$pg_hba.backup"
 
 # Add LDAP configuration
 echo "# LDAP auth via AD" >> "$pg_hba"
-echo "host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapprefix= uid= ldapsuffix=,${ldap_search_base} ldapbasedn=${ldap_search_base} ldapbinddn=${ldap_bind_dn} ldapbindpasswd=${ldap_bind_password}" >> "$pg_hba"
+echo "host    all             all             0.0.0.0/0               ldap ldapserver=${ldap_server_host} ldapport=389 ldapbasedn=\"${ldap_search_base}\" ldapbinddn=\"${ldap_bind_dn}\" ldapbindpasswd=\"${ldap_bind_password}\"" >> "$pg_hba"
 
 # Test configuration before restarting
 echo "Testing PostgreSQL configuration..."
