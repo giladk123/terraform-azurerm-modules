@@ -1,0 +1,49 @@
+{
+  "aks-dev-001": {
+    "resource_group_name": "rg-aks-dev-001",
+    "location": "East US",
+    "dns_prefix": "aks-dev-001",
+    "kubernetes_version": "1.28.3",
+    "sku_tier": "Free",
+    "identity": {
+      "type": "SystemAssigned"
+    },
+    "default_node_pool": {
+      "name": "system",
+      "vm_size": "Standard_DS2_v2",
+      "node_count": 2,
+      "auto_scaling_enabled": true,
+      "min_count": 1,
+      "max_count": 3,
+      "max_pods": 30,
+      "os_disk_size_gb": 30,
+      "os_disk_type": "Managed",
+      "os_sku": "Ubuntu",
+      "node_labels": {
+        "nodepool": "system",
+        "environment": "development"
+      },
+      "upgrade_settings": {
+        "max_surge": "1"
+      }
+    },
+    "network_profile": {
+      "network_plugin": "kubenet",
+      "service_cidr": "10.0.0.0/16",
+      "dns_service_ip": "10.0.0.10",
+      "pod_cidr": "10.244.0.0/16",
+      "load_balancer_sku": "standard"
+    },
+    "automatic_upgrade_channel": "patch",
+    "node_os_upgrade_channel": "NodeImage",
+    "azure_policy_enabled": false,
+    "http_application_routing_enabled": false,
+    "workload_identity_enabled": true,
+    "oidc_issuer_enabled": true,
+    "tags": {
+      "Environment": "Development",
+      "Project": "AKS-Demo",
+      "ManagedBy": "Terraform"
+    }
+  }
+}

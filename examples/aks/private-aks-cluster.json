@@ -1,0 +1,74 @@
+{
+  "aks-private-001": {
+    "resource_group_name": "rg-aks-private-001",
+    "location": "East US",
+    "dns_prefix": "aks-private-001",
+    "kubernetes_version": "1.28.3",
+    "sku_tier": "Standard",
+    "identity": {
+      "type": "SystemAssigned"
+    },
+    "default_node_pool": {
+      "name": "system",
+      "vm_size": "Standard_DS2_v2",
+      "node_count": 3,
+      "auto_scaling_enabled": true,
+      "min_count": 3,
+      "max_count": 5,
+      "max_pods": 30,
+      "os_disk_size_gb": 50,
+      "vnet_subnet_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-network/providers/Microsoft.Network/virtualNetworks/vnet-aks/subnets/subnet-aks-nodes",
+      "zones": ["1", "2", "3"],
+      "node_labels": {
+        "nodepool": "system",
+        "environment": "private"
+      },
+      "upgrade_settings": {
+        "max_surge": "1"
+      }
+    },
+    "network_profile": {
+      "network_plugin": "azure",
+      "network_policy": "azure",
+      "service_cidr": "10.1.0.0/16",
+      "dns_service_ip": "10.1.0.10",
+      "load_balancer_sku": "standard",
+      "outbound_type": "userDefinedRouting"
+    },
+    "private_cluster_enabled": true,
+    "private_dns_zone_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-dns/providers/Microsoft.Network/privateDnsZones/privatelink.eastus.azmk8s.io",
+    "private_cluster_public_fqdn_enabled": false,
+    "api_server_access_profile": {
+      "authorized_ip_ranges": [
+        "10.0.0.0/8",
+        "172.16.0.0/12",
+        "192.168.0.0/16"
+      ]
+    },
+    "linux_profile": {
+      "admin_username": "azureuser",
+      "ssh_key": {
+        "key_data": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
+      }
+    },
+    "azure_active_directory_role_based_access_control": {
+      "admin_group_object_ids": ["00000000-0000-0000-0000-000000000000"],
+      "azure_rbac_enabled": true
+    },
+    "oms_agent": {
+      "log_analytics_workspace_id": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/rg-monitoring/providers/Microsoft.OperationalInsights/workspaces/law-aks-monitoring",
+      "msi_auth_for_monitoring_enabled": true
+    },
+    "automatic_upgrade_channel": "patch",
+    "node_os_upgrade_channel": "NodeImage",
+    "azure_policy_enabled": true,
+    "workload_identity_enabled": true,
+    "oidc_issuer_enabled": true,
+    "tags": {
+      "Environment": "Private",
+      "Project": "AKS-Private",
+      "ManagedBy": "Terraform",
+      "NetworkType": "Private"
+    }
+  }
+}
