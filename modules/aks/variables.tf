@@ -48,9 +48,7 @@ variable "aks_clusters" {
       
       # Upgrade settings
       upgrade_settings = optional(object({
-        drain_timeout_in_minutes     = optional(number)
-        node_soak_duration_in_minutes = optional(number)
-        max_surge                    = string
+        max_surge = string
       }))
       
       # Linux OS configuration
@@ -136,9 +134,7 @@ variable "aks_clusters" {
       
       # Upgrade settings
       upgrade_settings = optional(object({
-        drain_timeout_in_minutes     = optional(number)
-        node_soak_duration_in_minutes = optional(number)
-        max_surge                    = string
+        max_surge = string
       }))
       
       # Linux OS configuration
@@ -199,7 +195,6 @@ variable "aks_clusters" {
       network_plugin      = optional(string, "kubenet")
       network_plugin_mode = optional(string)
       network_policy      = optional(string)
-      network_data_plane  = optional(string, "azure")
       dns_service_ip      = optional(string)
       service_cidr        = optional(string)
       service_cidrs       = optional(list(string))
@@ -216,7 +211,6 @@ variable "aks_clusters" {
         outbound_ip_prefix_ids        = optional(list(string))
         outbound_ports_allocated      = optional(number)
         idle_timeout_in_minutes       = optional(number, 30)
-        backend_pool_type             = optional(string, "NodeIPConfiguration")
       }))
     }))
     
@@ -316,7 +310,6 @@ variable "aks_clusters" {
     
     # Upgrade settings
     automatic_upgrade_channel    = optional(string, "none")
-    node_os_upgrade_channel     = optional(string, "NodeImage")
     
     # Storage profile
     storage_profile = optional(object({

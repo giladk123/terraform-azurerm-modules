@@ -16,7 +16,7 @@ resource "azurerm_kubernetes_cluster" "this" {
     name                         = each.value.default_node_pool.name
     vm_size                      = each.value.default_node_pool.vm_size
     node_count                   = each.value.default_node_pool.node_count
-    auto_scaling_enabled         = each.value.default_node_pool.auto_scaling_enabled
+    enable_auto_scaling          = each.value.default_node_pool.auto_scaling_enabled
     min_count                    = each.value.default_node_pool.auto_scaling_enabled ? each.value.default_node_pool.min_count : null
     max_count                    = each.value.default_node_pool.auto_scaling_enabled ? each.value.default_node_pool.max_count : null
     max_pods                     = each.value.default_node_pool.max_pods
@@ -27,8 +27,8 @@ resource "azurerm_kubernetes_cluster" "this" {
     pod_subnet_id               = each.value.default_node_pool.pod_subnet_id
     zones                       = each.value.default_node_pool.zones
     ultra_ssd_enabled           = each.value.default_node_pool.ultra_ssd_enabled
-    host_encryption_enabled     = each.value.default_node_pool.host_encryption_enabled
-    node_public_ip_enabled      = each.value.default_node_pool.node_public_ip_enabled
+    enable_host_encryption      = each.value.default_node_pool.host_encryption_enabled
+    enable_node_public_ip       = each.value.default_node_pool.node_public_ip_enabled
     only_critical_addons_enabled = each.value.default_node_pool.only_critical_addons_enabled
     temporary_name_for_rotation = each.value.default_node_pool.temporary_name_for_rotation
     node_labels                 = each.value.default_node_pool.node_labels
@@ -37,9 +37,7 @@ resource "azurerm_kubernetes_cluster" "this" {
     dynamic "upgrade_settings" {
       for_each = each.value.default_node_pool.upgrade_settings != null ? [each.value.default_node_pool.upgrade_settings] : []
       content {
-        drain_timeout_in_minutes     = upgrade_settings.value.drain_timeout_in_minutes
-        node_soak_duration_in_minutes = upgrade_settings.value.node_soak_duration_in_minutes
-        max_surge                    = upgrade_settings.value.max_surge
+        max_surge = upgrade_settings.value.max_surge
       }
     }
     
@@ -49,7 +47,7 @@ resource "azurerm_kubernetes_cluster" "this" {
       content {
         swap_file_size_mb = linux_os_config.value.swap_file_size_mb
         transparent_huge_page_defrag = linux_os_config.value.transparent_huge_page_defrag
-        transparent_huge_page = linux_os_config.value.transparent_huge_page
+        transparent_huge_page_enabled = linux_os_config.value.transparent_huge_page
         
         dynamic "sysctl_config" {
           for_each = linux_os_config.value.sysctl_config != null ? [linux_os_config.value.sysctl_config] : []
@@ -129,14 +127,11 @@ resource "azurerm_kubernetes_cluster" "this" {
     for_each = each.value.network_profile != null ? [each.value.network_profile] : []
     content {
       network_plugin      = network_profile.value.network_plugin
-      network_plugin_mode = network_profile.value.network_plugin_mode
+      network_mode        = network_profile.value.network_plugin_mode
       network_policy      = network_profile.value.network_policy
-      network_data_plane  = network_profile.value.network_data_plane
       dns_service_ip      = network_profile.value.dns_service_ip
       service_cidr        = network_profile.value.service_cidr
-      service_cidrs       = network_profile.value.service_cidrs
       pod_cidr            = network_profile.value.pod_cidr
-      pod_cidrs           = network_profile.value.pod_cidrs
       outbound_type       = network_profile.value.outbound_type
       load_balancer_sku   = network_profile.value.load_balancer_sku
       
@@ -150,7 +145,6 @@ resource "azurerm_kubernetes_cluster" "this" {
           outbound_ip_prefix_ids        = load_balancer_profile.value.outbound_ip_prefix_ids
           outbound_ports_allocated      = load_balancer_profile.value.outbound_ports_allocated
           idle_timeout_in_minutes       = load_balancer_profile.value.idle_timeout_in_minutes
-          backend_pool_type             = load_balancer_profile.value.backend_pool_type
         }
       }
     }
@@ -313,8 +307,7 @@ resource "azurerm_kubernetes_cluster" "this" {
   private_cluster_public_fqdn_enabled   = each.value.private_cluster_public_fqdn_enabled
 
   # Upgrade settings
-  automatic_upgrade_channel = each.value.automatic_upgrade_channel
-  node_os_upgrade_channel   = each.value.node_os_upgrade_channel
+  automatic_channel_upgrade = each.value.automatic_upgrade_channel
 
   tags = each.value.tags
 }
@@ -368,7 +361,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "this" {
   kubernetes_cluster_id = azurerm_kubernetes_cluster.this[each.value.cluster_key].id
   vm_size               = each.value.vm_size
   node_count            = each.value.node_count
-  auto_scaling_enabled  = each.value.auto_scaling_enabled
+  enable_auto_scaling   = each.value.auto_scaling_enabled
   min_count             = each.value.auto_scaling_enabled ? each.value.min_count : null
   max_count             = each.value.auto_scaling_enabled ? each.value.max_count : null
   max_pods              = each.value.max_pods
@@ -380,8 +373,8 @@ resource "azurerm_kubernetes_cluster_node_pool" "this" {
   pod_subnet_id         = each.value.pod_subnet_id
   zones                 = each.value.zones
   ultra_ssd_enabled     = each.value.ultra_ssd_enabled
-  host_encryption_enabled = each.value.host_encryption_enabled
-  node_public_ip_enabled = each.value.node_public_ip_enabled
+  enable_host_encryption = each.value.host_encryption_enabled
+  enable_node_public_ip = each.value.node_public_ip_enabled
   mode                  = each.value.mode
   priority              = each.value.priority
   eviction_policy       = each.value.eviction_policy
@@ -394,9 +387,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "this" {
   dynamic "upgrade_settings" {
     for_each = each.value.upgrade_settings != null ? [each.value.upgrade_settings] : []
     content {
-      drain_timeout_in_minutes     = upgrade_settings.value.drain_timeout_in_minutes
-      node_soak_duration_in_minutes = upgrade_settings.value.node_soak_duration_in_minutes
-      max_surge                    = upgrade_settings.value.max_surge
+      max_surge = upgrade_settings.value.max_surge
     }
   }
 
@@ -406,7 +397,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "this" {
     content {
       swap_file_size_mb = linux_os_config.value.swap_file_size_mb
       transparent_huge_page_defrag = linux_os_config.value.transparent_huge_page_defrag
-      transparent_huge_page = linux_os_config.value.transparent_huge_page
+      transparent_huge_page_enabled = linux_os_config.value.transparent_huge_page
       
       dynamic "sysctl_config" {
         for_each = linux_os_config.value.sysctl_config != null ? [linux_os_config.value.sysctl_config] : []
