@@ -229,9 +229,13 @@ variable "aks_clusters" {
     
     # RBAC and Azure AD integration
     azure_active_directory_role_based_access_control = optional(object({
+      managed                 = optional(bool, true)
       tenant_id               = optional(string)
       admin_group_object_ids  = optional(list(string))
       azure_rbac_enabled      = optional(bool, false)
+      client_app_id           = optional(string)
+      server_app_id           = optional(string)
+      server_app_secret       = optional(string)
     }))
     
     # Auto scaler profile

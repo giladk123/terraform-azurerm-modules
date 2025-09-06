@@ -175,9 +175,13 @@ resource "azurerm_kubernetes_cluster" "this" {
   dynamic "azure_active_directory_role_based_access_control" {
     for_each = each.value.azure_active_directory_role_based_access_control != null ? [each.value.azure_active_directory_role_based_access_control] : []
     content {
+      managed                 = azure_active_directory_role_based_access_control.value.managed
       tenant_id               = azure_active_directory_role_based_access_control.value.tenant_id
       admin_group_object_ids  = azure_active_directory_role_based_access_control.value.admin_group_object_ids
       azure_rbac_enabled      = azure_active_directory_role_based_access_control.value.azure_rbac_enabled
+      client_app_id           = azure_active_directory_role_based_access_control.value.client_app_id
+      server_app_id           = azure_active_directory_role_based_access_control.value.server_app_id
+      server_app_secret       = azure_active_directory_role_based_access_control.value.server_app_secret
     }
   }
 
