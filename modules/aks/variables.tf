@@ -41,7 +41,6 @@ variable "aks_clusters" {
       host_encryption_enabled     = optional(bool, false)
       node_public_ip_enabled      = optional(bool, false)
       only_critical_addons_enabled = optional(bool, false)
-      temporary_name_for_rotation = optional(string)
       
       # Node labels and taints
       node_labels = optional(map(string), {})
@@ -126,7 +125,6 @@ variable "aks_clusters" {
       priority                    = optional(string, "Regular")
       eviction_policy             = optional(string)
       spot_max_price              = optional(number)
-      temporary_name_for_rotation = optional(string)
       
       # Node labels and taints
       node_labels = optional(map(string), {})

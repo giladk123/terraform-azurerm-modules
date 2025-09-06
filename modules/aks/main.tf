@@ -30,7 +30,6 @@ resource "azurerm_kubernetes_cluster" "this" {
     enable_host_encryption      = each.value.default_node_pool.host_encryption_enabled
     enable_node_public_ip       = each.value.default_node_pool.node_public_ip_enabled
     only_critical_addons_enabled = each.value.default_node_pool.only_critical_addons_enabled
-    temporary_name_for_rotation = each.value.default_node_pool.temporary_name_for_rotation
     node_labels                 = each.value.default_node_pool.node_labels
     
     # Upgrade settings
@@ -340,7 +339,6 @@ locals {
         priority                    = pool_value.priority
         eviction_policy             = pool_value.eviction_policy
         spot_max_price              = pool_value.spot_max_price
-        temporary_name_for_rotation = pool_value.temporary_name_for_rotation
         node_labels                 = pool_value.node_labels
         node_taints                 = pool_value.node_taints
         upgrade_settings            = pool_value.upgrade_settings
@@ -379,7 +377,6 @@ resource "azurerm_kubernetes_cluster_node_pool" "this" {
   priority              = each.value.priority
   eviction_policy       = each.value.eviction_policy
   spot_max_price        = each.value.spot_max_price
-  temporary_name_for_rotation = each.value.temporary_name_for_rotation
   node_labels           = each.value.node_labels
   node_taints           = each.value.node_taints
 
