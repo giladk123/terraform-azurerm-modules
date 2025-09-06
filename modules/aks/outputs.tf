@@ -11,10 +11,10 @@ output "aks_clusters" {
       private_fqdn              = cluster.private_fqdn
       portal_fqdn               = cluster.portal_fqdn
       kubernetes_version        = cluster.kubernetes_version
-      current_kubernetes_version = cluster.current_kubernetes_version
+      current_kubernetes_version = try(cluster.current_kubernetes_version, null)
       node_resource_group       = cluster.node_resource_group
-      node_resource_group_id    = cluster.node_resource_group_id
-      oidc_issuer_url          = cluster.oidc_issuer_url
+      node_resource_group_id    = try(cluster.node_resource_group_id, null)
+      oidc_issuer_url          = try(cluster.oidc_issuer_url, null)
       
       # Kube config (sensitive)
       kube_config_raw          = cluster.kube_config_raw
@@ -90,7 +90,7 @@ output "kube_admin_configs" {
 output "oidc_issuer_urls" {
   description = "Map of AKS cluster names to their OIDC issuer URLs"
   value = {
-    for key, cluster in azurerm_kubernetes_cluster.this : key => cluster.oidc_issuer_url
+    for key, cluster in azurerm_kubernetes_cluster.this : key => try(cluster.oidc_issuer_url, null)
   }
 }
 
@@ -104,7 +104,7 @@ output "node_resource_groups" {
 output "node_resource_group_ids" {
   description = "Map of AKS cluster names to their node resource group IDs"
   value = {
-    for key, cluster in azurerm_kubernetes_cluster.this : key => cluster.node_resource_group_id
+    for key, cluster in azurerm_kubernetes_cluster.this : key => try(cluster.node_resource_group_id, null)
   }
 }
 
@@ -138,7 +138,7 @@ output "additional_node_pools" {
       kubernetes_cluster_id = pool.kubernetes_cluster_id
       vm_size              = pool.vm_size
       node_count           = pool.node_count
-      auto_scaling_enabled = pool.auto_scaling_enabled
+      auto_scaling_enabled = pool.enable_auto_scaling
       min_count            = pool.min_count
       max_count            = pool.max_count
       os_type              = pool.os_type
