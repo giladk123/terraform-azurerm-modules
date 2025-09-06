@@ -317,7 +317,6 @@ variable "aks_clusters" {
     # Upgrade settings
     automatic_upgrade_channel    = optional(string, "none")
     node_os_upgrade_channel     = optional(string, "NodeImage")
-    kubernetes_version          = optional(string)
     
     # Storage profile
     storage_profile = optional(object({
