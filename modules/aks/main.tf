@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.116.0"
+    }
+  }
+}
+
 # AKS Cluster Resource
 resource "azurerm_kubernetes_cluster" "this" {
   for_each = var.aks_clusters
