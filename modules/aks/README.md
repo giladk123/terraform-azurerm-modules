@@ -2,6 +2,15 @@
 
 This module creates and manages Azure Kubernetes Service (AKS) clusters with comprehensive configuration options, following best practices for production deployments.
 
+## Recent Updates
+
+### v3.116.0 (Latest)
+- ✅ **Updated AzureRM Provider**: Now using version `3.116.0` (Microsoft recommended)
+- ✅ **Modern Azure AD Integration**: Updated to use AKS-managed Entra Integration (removes legacy deprecation warnings)
+- ✅ **Kubernetes Version**: Updated examples to use `1.30.6` (stable, Free tier compatible)
+- ✅ **Load Balancer**: Standard Load Balancer required for availability zones support
+- ✅ **API Stability**: Uses stable Azure APIs instead of preview versions
+
 ## Features
 
 - ✅ **Reusable and Configurable**: JSON-based configuration for maximum flexibility
@@ -31,7 +40,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 3.0"
+      version = "3.116.0"
     }
   }
 }
@@ -63,7 +72,7 @@ module "aks" {
     "resource_group_name": "rg-aks-dev-001",
     "location": "East US",
     "dns_prefix": "aks-dev-001",
-    "kubernetes_version": "1.28.3",
+    "kubernetes_version": "1.30.6",
     "sku_tier": "Free",
     "identity": {
       "type": "SystemAssigned"
@@ -101,7 +110,7 @@ module "aks" {
     "resource_group_name": "rg-aks-prod-001",
     "location": "East US",
     "dns_prefix": "aks-prod-001",
-    "kubernetes_version": "1.28.3",
+    "kubernetes_version": "1.30.6",
     "sku_tier": "Standard",
     "identity": {
       "type": "SystemAssigned"
@@ -136,8 +145,9 @@ module "aks" {
       "dns_service_ip": "10.0.0.10"
     },
     "azure_active_directory_role_based_access_control": {
-      "admin_group_object_ids": ["group-id-here"],
-      "azure_rbac_enabled": true
+      "managed": true,
+      "azure_rbac_enabled": false,
+      "admin_group_object_ids": ["group-id-here"]
     },
     "oms_agent": {
       "log_analytics_workspace_id": "/subscriptions/.../workspaces/law-monitoring"
@@ -241,14 +251,18 @@ Or for user-assigned identity:
 
 #### Security Configuration
 
-##### Azure AD Integration
+##### Azure AD Integration (Modern AKS-managed Entra Integration)
 
 ```json
 "azure_active_directory_role_based_access_control": {
+  "managed": true,
+  "azure_rbac_enabled": false,
   "admin_group_object_ids": ["group-id-1", "group-id-2"],
-  "azure_rbac_enabled": true
+  "tenant_id": null
 }
 ```
+
+> **Note**: For development environments, you can omit the `azure_active_directory_role_based_access_control` configuration entirely to use standard Kubernetes RBAC without Azure AD integration.
 
 ##### Private Cluster
 
@@ -373,12 +387,70 @@ For complete usage examples, see the [examples directory](../../examples/aks/).
 3. Check node status: `kubectl get nodes -o wide`
 4. Verify network connectivity: Test from within pods
 
+## Troubleshooting
+
+### Common Issues and Solutions
+
+#### 1. Azure AD Integration Deprecation Warning
+**Error**: `Azure AD Integration (legacy) is deprecated`
+**Solution**: Use modern AKS-managed Entra Integration:
+```json
+"azure_active_directory_role_based_access_control": {
+  "managed": true,
+  "azure_rbac_enabled": false
+}
+```
+**Note**: Remove legacy parameters (`client_app_id`, `server_app_id`, `server_app_secret`)
+
+#### 2. Load Balancer SKU Error
+**Error**: `SLBRequiredForAvailabilityZone`
+**Solution**: Use Standard Load Balancer when using availability zones:
+```json
+"network_profile": {
+  "load_balancer_sku": "standard"
+},
+"default_node_pool": {
+  "zones": ["1", "2", "3"]
+}
+```
+
+#### 3. Kubernetes Version Not Supported
+**Error**: `K8sVersionNotSupported` - LTS versions require Premium tier
+**Solution**: Use standard supported versions with Free tier:
+```json
+"kubernetes_version": "1.30.6",
+"sku_tier": "Free"
+```
+
+#### 4. Provider Version Conflicts
+**Error**: Version constraint conflicts between modules
+**Solution**: Use consistent provider version across all modules:
+```hcl
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.116.0"
+    }
+  }
+}
+```
+
+#### 5. Node Pool OS Disk Type Error
+**Error**: `expected default_node_pool.0.os_disk_type to be one of ["Ephemeral" "Managed"]`
+**Solution**: Use valid disk types:
+```json
+"default_node_pool": {
+  "os_disk_type": "Managed"
+}
+```
+
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | terraform | >= 1.0 |
-| azurerm | >= 3.0 |
+| azurerm | 3.116.0 |
 
 ## Contributing
 
