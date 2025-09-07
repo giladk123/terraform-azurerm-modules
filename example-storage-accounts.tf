@@ -23,7 +23,7 @@ locals {
 # Call the storage account module
 module "storage_accounts" {
   source = "./modules/storage_account"
-  
+
   storage_accounts = local.storage_accounts
 }
 

@@ -11,17 +11,17 @@ resource "azurerm_subnet" "subnet" {
     for subnet in flatten([
       for vnet_key, vnet in var.vnet_config : [
         for subnet_key, subnet in vnet.subnets : {
-          id           = "${vnet_key}-${subnet_key}"
-          vnet_key    = vnet_key
-          subnet_key  = subnet_key
+          id            = "${vnet_key}-${subnet_key}"
+          vnet_key      = vnet_key
+          subnet_key    = subnet_key
           subnet_config = subnet
-          vnet_name   = azurerm_virtual_network.vnet[vnet_key].name
-          rg_name     = vnet.resource_group_name
+          vnet_name     = azurerm_virtual_network.vnet[vnet_key].name
+          rg_name       = vnet.resource_group_name
         }
       ]
     ]) : subnet.id => subnet
   }
-  
+
   name                 = each.value.subnet_config.name
   resource_group_name  = each.value.rg_name
   virtual_network_name = each.value.vnet_name

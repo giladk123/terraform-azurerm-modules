@@ -29,10 +29,10 @@ variable "vm" {
 variable "domain" {
   description = "Active Directory domain settings."
   type = object({
-    domain_fqdn         = string
-    netbios_name        = string
-    safe_mode_password  = string
-    site_name           = optional(string, "Default-First-Site-Name")
+    domain_fqdn        = string
+    netbios_name       = string
+    safe_mode_password = string
+    site_name          = optional(string, "Default-First-Site-Name")
   })
   validation {
     condition     = length(trimspace(var.domain.safe_mode_password)) > 0
@@ -43,12 +43,12 @@ variable "domain" {
 variable "ldap_user" {
   description = "Optional LDAP user to create in the domain."
   type = object({
-    create          = optional(bool, false)
-    username        = optional(string)
-    password        = optional(string)
-    ou_dn           = optional(string, "CN=Users")
-    given_name      = optional(string)
-    surname         = optional(string)
+    create     = optional(bool, false)
+    username   = optional(string)
+    password   = optional(string)
+    ou_dn      = optional(string, "CN=Users")
+    given_name = optional(string)
+    surname    = optional(string)
   })
   default = null
 }
@@ -56,13 +56,13 @@ variable "ldap_user" {
 variable "nsg" {
   description = "Optional NSG configuration to attach to the NIC."
   type = object({
-    name           = optional(string)
+    name = optional(string)
     security_rules = optional(list(object({
       name                       = string
       priority                   = number
-      direction                  = string        # Inbound/Outbound
-      access                     = string        # Allow/Deny
-      protocol                   = string        # Tcp/Udp/Asterisk
+      direction                  = string # Inbound/Outbound
+      access                     = string # Allow/Deny
+      protocol                   = string # Tcp/Udp/Asterisk
       source_port_range          = optional(string)
       destination_port_range     = optional(string)
       source_address_prefix      = optional(string)

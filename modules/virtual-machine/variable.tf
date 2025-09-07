@@ -11,7 +11,7 @@ variable "vms" {
     image_sku                   = string
     image_version               = string
     network_security_group_name = optional(string)
-    security_rules              = optional(list(object({
+    security_rules = optional(list(object({
       name                       = string
       priority                   = number
       direction                  = string
@@ -32,12 +32,12 @@ variable "vms" {
 
 variable "subnet_id" {
   description = "Map of subnet IDs."
-  type = string
+  type        = string
 }
 
 variable "user_data" {
   description = "User data to be used for the virtual machine."
-  type = string
+  type        = string
 }
 
 variable "name_convention" {

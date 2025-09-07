@@ -8,8 +8,8 @@ terraform {
 }
 
 resource "azurerm_private_dns_zone" "private_dns" {
-    for_each = toset(var.zones)
+  for_each = toset(var.zones)
 
-    name                = each.key
-    resource_group_name = var.resource_group_name
+  name                = each.key
+  resource_group_name = var.resource_group_name
 }

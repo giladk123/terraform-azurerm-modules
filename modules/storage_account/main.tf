@@ -2,21 +2,21 @@
 resource "azurerm_storage_account" "this" {
   for_each = var.storage_accounts
 
-  name                            = each.key
-  resource_group_name             = each.value.resource_group_name
-  location                        = each.value.location
-  account_tier                    = each.value.account_tier
-  account_replication_type        = each.value.account_replication_type
-  account_kind                    = each.value.account_kind
-  access_tier                     = each.value.access_tier
-  enable_https_traffic_only       = each.value.https_traffic_only_enabled
-  min_tls_version                 = each.value.min_tls_version
-  allow_nested_items_to_be_public = each.value.allow_nested_items_to_be_public
-  shared_access_key_enabled       = each.value.shared_access_key_enabled
-  is_hns_enabled                  = each.value.is_hns_enabled
-  nfsv3_enabled                   = each.value.nfsv3_enabled
-  large_file_share_enabled        = each.value.large_file_share_enabled
-  public_network_access_enabled   = each.value.public_network_access_enabled
+  name                             = each.key
+  resource_group_name              = each.value.resource_group_name
+  location                         = each.value.location
+  account_tier                     = each.value.account_tier
+  account_replication_type         = each.value.account_replication_type
+  account_kind                     = each.value.account_kind
+  access_tier                      = each.value.access_tier
+  enable_https_traffic_only        = each.value.https_traffic_only_enabled
+  min_tls_version                  = each.value.min_tls_version
+  allow_nested_items_to_be_public  = each.value.allow_nested_items_to_be_public
+  shared_access_key_enabled        = each.value.shared_access_key_enabled
+  is_hns_enabled                   = each.value.is_hns_enabled
+  nfsv3_enabled                    = each.value.nfsv3_enabled
+  large_file_share_enabled         = each.value.large_file_share_enabled
+  public_network_access_enabled    = each.value.public_network_access_enabled
   cross_tenant_replication_enabled = try(each.value.cross_tenant_replication_enabled, true)
 
   # Blob properties
@@ -92,7 +92,7 @@ locals {
 
 resource "azurerm_storage_container" "this" {
   for_each = {
-    for container in local.storage_containers : 
+    for container in local.storage_containers :
     "${container.storage_account_key}-${container.container_key}" => container
   }
 
@@ -121,7 +121,7 @@ locals {
 
 resource "azurerm_storage_share" "this" {
   for_each = {
-    for share in local.storage_file_shares : 
+    for share in local.storage_file_shares :
     "${share.storage_account_key}-${share.share_key}" => share
   }
 
@@ -149,7 +149,7 @@ locals {
 
 resource "azurerm_storage_queue" "this" {
   for_each = {
-    for queue in local.storage_queues : 
+    for queue in local.storage_queues :
     "${queue.storage_account_key}-${queue.queue_key}" => queue
   }
 
@@ -174,7 +174,7 @@ locals {
 
 resource "azurerm_storage_table" "this" {
   for_each = {
-    for table in local.storage_tables : 
+    for table in local.storage_tables :
     "${table.storage_account_key}-${table.table_key}" => table
   }
 
@@ -186,7 +186,7 @@ resource "azurerm_storage_table" "this" {
 locals {
   # Create a map of storage accounts that have lifecycle rules
   storage_accounts_with_lifecycle = {
-    for sa_key, sa_value in var.storage_accounts : 
+    for sa_key, sa_value in var.storage_accounts :
     sa_key => sa_value if length(sa_value.lifecycle_rules) > 0
   }
 }
@@ -263,7 +263,7 @@ locals {
 
 resource "azurerm_private_endpoint" "this" {
   for_each = {
-    for pe in local.private_endpoints : 
+    for pe in local.private_endpoints :
     "${pe.storage_account_key}-${pe.private_endpoint_key}" => pe
   }
 
@@ -273,7 +273,7 @@ resource "azurerm_private_endpoint" "this" {
   subnet_id           = each.value.subnet_id
 
   private_service_connection {
-    name                           = coalesce(
+    name = coalesce(
       each.value.private_service_connection_name,
       "${each.value.private_endpoint_key}-psc"
     )

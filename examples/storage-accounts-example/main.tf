@@ -25,9 +25,9 @@ resource "azurerm_resource_group" "web_prod" {
 # Deploy storage accounts using the module
 module "storage_accounts" {
   source = "../../modules/storage_account"
-  
+
   storage_accounts = local.storage_accounts
-  
+
   depends_on = [
     azurerm_resource_group.storage_prod,
     azurerm_resource_group.storage_dev,

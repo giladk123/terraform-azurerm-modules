@@ -20,10 +20,10 @@ output "blob_endpoints" {
 output "production_app_storage" {
   description = "Production application storage account details"
   value = {
-    id               = module.storage_accounts.storage_account_ids["stprodapp001"]
-    name             = module.storage_accounts.storage_account_names["stprodapp001"]
-    blob_endpoint    = module.storage_accounts.primary_blob_endpoints["stprodapp001"]
-    containers       = [for k, v in module.storage_accounts.containers : v.name if startswith(k, "stprodapp001")]
+    id            = module.storage_accounts.storage_account_ids["stprodapp001"]
+    name          = module.storage_accounts.storage_account_names["stprodapp001"]
+    blob_endpoint = module.storage_accounts.primary_blob_endpoints["stprodapp001"]
+    containers    = [for k, v in module.storage_accounts.containers : v.name if startswith(k, "stprodapp001")]
   }
 }
 
@@ -35,8 +35,8 @@ output "static_website_url" {
 output "data_lake_storage" {
   description = "Data Lake storage account details"
   value = {
-    id            = module.storage_accounts.storage_account_ids["stdevdata001"]
-    name          = module.storage_accounts.storage_account_names["stdevdata001"]
+    id             = module.storage_accounts.storage_account_ids["stdevdata001"]
+    name           = module.storage_accounts.storage_account_names["stdevdata001"]
     is_hns_enabled = true
   }
 }

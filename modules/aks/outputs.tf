@@ -2,34 +2,34 @@ output "aks_clusters" {
   description = "Map of all created AKS clusters with their properties"
   value = {
     for key, cluster in azurerm_kubernetes_cluster.this : key => {
-      id                        = cluster.id
-      name                      = cluster.name
-      location                  = cluster.location
-      resource_group_name       = cluster.resource_group_name
-      dns_prefix                = cluster.dns_prefix
-      fqdn                      = cluster.fqdn
-      private_fqdn              = cluster.private_fqdn
-      portal_fqdn               = cluster.portal_fqdn
-      kubernetes_version        = cluster.kubernetes_version
+      id                         = cluster.id
+      name                       = cluster.name
+      location                   = cluster.location
+      resource_group_name        = cluster.resource_group_name
+      dns_prefix                 = cluster.dns_prefix
+      fqdn                       = cluster.fqdn
+      private_fqdn               = cluster.private_fqdn
+      portal_fqdn                = cluster.portal_fqdn
+      kubernetes_version         = cluster.kubernetes_version
       current_kubernetes_version = try(cluster.current_kubernetes_version, null)
-      node_resource_group       = cluster.node_resource_group
-      node_resource_group_id    = try(cluster.node_resource_group_id, null)
-      oidc_issuer_url          = try(cluster.oidc_issuer_url, null)
-      
+      node_resource_group        = cluster.node_resource_group
+      node_resource_group_id     = try(cluster.node_resource_group_id, null)
+      oidc_issuer_url            = try(cluster.oidc_issuer_url, null)
+
       # Kube config (sensitive)
-      kube_config_raw          = cluster.kube_config_raw
-      kube_admin_config_raw    = cluster.kube_admin_config_raw
-      
+      kube_config_raw       = cluster.kube_config_raw
+      kube_admin_config_raw = cluster.kube_admin_config_raw
+
       # Identity information
-      identity = cluster.identity
+      identity         = cluster.identity
       kubelet_identity = cluster.kubelet_identity
-      
+
       # Network profile
       network_profile = cluster.network_profile
-      
+
       # Add-on identities
-      oms_agent_identity = try(cluster.oms_agent[0].oms_agent_identity, null)
-      key_vault_secrets_provider_identity = try(cluster.key_vault_secrets_provider[0].secret_identity, null)
+      oms_agent_identity                   = try(cluster.oms_agent[0].oms_agent_identity, null)
+      key_vault_secrets_provider_identity  = try(cluster.key_vault_secrets_provider[0].secret_identity, null)
       ingress_application_gateway_identity = try(cluster.ingress_application_gateway[0].ingress_application_gateway_identity, null)
     }
   }
@@ -133,20 +133,20 @@ output "additional_node_pools" {
   description = "Map of all created additional node pools"
   value = {
     for key, pool in azurerm_kubernetes_cluster_node_pool.this : key => {
-      id                   = pool.id
-      name                 = pool.name
+      id                    = pool.id
+      name                  = pool.name
       kubernetes_cluster_id = pool.kubernetes_cluster_id
-      vm_size              = pool.vm_size
-      node_count           = pool.node_count
-      auto_scaling_enabled = pool.enable_auto_scaling
-      min_count            = pool.min_count
-      max_count            = pool.max_count
-      os_type              = pool.os_type
-      os_sku               = pool.os_sku
-      zones                = pool.zones
-      mode                 = pool.mode
-      priority             = pool.priority
-      spot_max_price       = pool.spot_max_price
+      vm_size               = pool.vm_size
+      node_count            = pool.node_count
+      auto_scaling_enabled  = pool.enable_auto_scaling
+      min_count             = pool.min_count
+      max_count             = pool.max_count
+      os_type               = pool.os_type
+      os_sku                = pool.os_sku
+      zones                 = pool.zones
+      mode                  = pool.mode
+      priority              = pool.priority
+      spot_max_price        = pool.spot_max_price
     }
   }
 }

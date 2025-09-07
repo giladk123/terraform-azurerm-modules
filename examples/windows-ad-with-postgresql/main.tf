@@ -13,7 +13,7 @@ provider "azurerm" {
 }
 
 locals {
-  cfg = jsondecode(file(var.config_json))
+  cfg         = jsondecode(file(var.config_json))
   name_prefix = "${local.cfg.name_convention.region}-${local.cfg.name_convention.dbank_idbank_first_letter}${local.cfg.name_convention.env}-${local.cfg.name_convention.cmdb_infra}-${local.cfg.name_convention.cmdb_project}"
   rg_name     = "${local.name_prefix}-main-rg"
 }
@@ -53,7 +53,7 @@ module "vnet" {
 }
 
 module "ad" {
-  source = "../..//modules/windows-ad-domain-controller"
+  source          = "../..//modules/windows-ad-domain-controller"
   name_convention = local.cfg.name_convention
   vm = merge(local.cfg.ad.vm, {
     resource_group = local.rg_name
@@ -69,7 +69,7 @@ module "ad" {
 }
 
 module "postgres" {
-  source = "../..//modules/ubuntu-postgresql"
+  source          = "../..//modules/ubuntu-postgresql"
   name_convention = local.cfg.name_convention
   vm = merge(local.cfg.postgres.vm, {
     resource_group = local.rg_name

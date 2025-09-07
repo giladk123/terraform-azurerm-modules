@@ -4,8 +4,8 @@ variable "repositories" {
     name               = string
     description        = string
     visibility         = string
-    auto_init         = optional(bool, true)
-    topics            = optional(list(string), [])
+    auto_init          = optional(bool, true)
+    topics             = optional(list(string), [])
     gitignore_template = optional(string)
     license_template   = optional(string)
   }))

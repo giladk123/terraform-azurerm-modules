@@ -62,7 +62,7 @@ resource "azurerm_network_security_group" "nsg" {
     }
   }
 
-  tags = each.value.tags  # Optional: Include tags if needed
+  tags = each.value.tags # Optional: Include tags if needed
 }
 
 # Associate NSGs with their corresponding Network Interfaces
@@ -110,7 +110,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
-  
+
   custom_data = var.user_data != "" ? base64encode(var.user_data) : null
 
   tags = each.value.tags

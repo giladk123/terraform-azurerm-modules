@@ -17,4 +17,4 @@ output "resource_group_tags" {
   value = {
     for name, rg in azurerm_resource_group.this : name => rg.tags
   }
-} 
+}

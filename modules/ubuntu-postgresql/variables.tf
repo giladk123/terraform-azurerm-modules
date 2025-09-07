@@ -40,18 +40,18 @@ variable "postgres" {
 variable "ldap" {
   description = "LDAP settings for PostgreSQL to authenticate against AD."
   type = object({
-    domain_fqdn  = string
-    bind_dn      = string
-    bind_password= string
-    search_base  = string
-    server_host  = string
+    domain_fqdn   = string
+    bind_dn       = string
+    bind_password = string
+    search_base   = string
+    server_host   = string
   })
 }
 
 variable "nsg" {
   description = "Optional NSG configuration to attach to the NIC."
   type = object({
-    name           = optional(string)
+    name = optional(string)
     security_rules = optional(list(object({
       name                       = string
       priority                   = number

@@ -23,7 +23,7 @@ locals {
 
 module "basic_aks" {
   source = "../../modules/aks"
-  
+
   aks_clusters = local.basic_aks_clusters
 }
 

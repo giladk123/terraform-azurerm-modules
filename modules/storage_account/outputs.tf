@@ -2,35 +2,35 @@ output "storage_accounts" {
   description = "Map of all created storage accounts with their properties"
   value = {
     for key, sa in azurerm_storage_account.this : key => {
-      id                        = sa.id
-      name                      = sa.name
-      primary_location          = sa.primary_location
-      secondary_location        = sa.secondary_location
-      primary_blob_endpoint     = sa.primary_blob_endpoint
-      secondary_blob_endpoint   = sa.secondary_blob_endpoint
-      primary_queue_endpoint    = sa.primary_queue_endpoint
-      secondary_queue_endpoint  = sa.secondary_queue_endpoint
-      primary_table_endpoint    = sa.primary_table_endpoint
-      secondary_table_endpoint  = sa.secondary_table_endpoint
-      primary_file_endpoint     = sa.primary_file_endpoint
-      secondary_file_endpoint   = sa.secondary_file_endpoint
-      primary_web_endpoint      = sa.primary_web_endpoint
-      secondary_web_endpoint    = sa.secondary_web_endpoint
-      primary_blob_host         = sa.primary_blob_host
-      secondary_blob_host       = sa.secondary_blob_host
-      primary_queue_host        = sa.primary_queue_host
-      secondary_queue_host      = sa.secondary_queue_host
-      primary_table_host        = sa.primary_table_host
-      secondary_table_host      = sa.secondary_table_host
-      primary_file_host         = sa.primary_file_host
-      secondary_file_host       = sa.secondary_file_host
-      primary_web_host          = sa.primary_web_host
-      secondary_web_host        = sa.secondary_web_host
-      primary_access_key        = sa.primary_access_key
-      secondary_access_key      = sa.secondary_access_key
-      primary_connection_string = sa.primary_connection_string
-      secondary_connection_string = sa.secondary_connection_string
-      primary_blob_connection_string = sa.primary_blob_connection_string
+      id                               = sa.id
+      name                             = sa.name
+      primary_location                 = sa.primary_location
+      secondary_location               = sa.secondary_location
+      primary_blob_endpoint            = sa.primary_blob_endpoint
+      secondary_blob_endpoint          = sa.secondary_blob_endpoint
+      primary_queue_endpoint           = sa.primary_queue_endpoint
+      secondary_queue_endpoint         = sa.secondary_queue_endpoint
+      primary_table_endpoint           = sa.primary_table_endpoint
+      secondary_table_endpoint         = sa.secondary_table_endpoint
+      primary_file_endpoint            = sa.primary_file_endpoint
+      secondary_file_endpoint          = sa.secondary_file_endpoint
+      primary_web_endpoint             = sa.primary_web_endpoint
+      secondary_web_endpoint           = sa.secondary_web_endpoint
+      primary_blob_host                = sa.primary_blob_host
+      secondary_blob_host              = sa.secondary_blob_host
+      primary_queue_host               = sa.primary_queue_host
+      secondary_queue_host             = sa.secondary_queue_host
+      primary_table_host               = sa.primary_table_host
+      secondary_table_host             = sa.secondary_table_host
+      primary_file_host                = sa.primary_file_host
+      secondary_file_host              = sa.secondary_file_host
+      primary_web_host                 = sa.primary_web_host
+      secondary_web_host               = sa.secondary_web_host
+      primary_access_key               = sa.primary_access_key
+      secondary_access_key             = sa.secondary_access_key
+      primary_connection_string        = sa.primary_connection_string
+      secondary_connection_string      = sa.secondary_connection_string
+      primary_blob_connection_string   = sa.primary_blob_connection_string
       secondary_blob_connection_string = sa.secondary_blob_connection_string
     }
   }
@@ -70,11 +70,11 @@ output "containers" {
   description = "Map of all created storage containers"
   value = {
     for key, container in azurerm_storage_container.this : key => {
-      id                   = container.id
-      name                 = container.name
-      storage_account_name = container.storage_account_name
+      id                    = container.id
+      name                  = container.name
+      storage_account_name  = container.storage_account_name
       container_access_type = container.container_access_type
-      resource_manager_id  = container.resource_manager_id
+      resource_manager_id   = container.resource_manager_id
     }
   }
 }
@@ -121,12 +121,12 @@ output "private_endpoints" {
   description = "Map of all created private endpoints"
   value = {
     for key, pe in azurerm_private_endpoint.this : key => {
-      id                = pe.id
-      name              = pe.name
-      location          = pe.location
-      subnet_id         = pe.subnet_id
-      network_interface = pe.network_interface
-      custom_dns_configs = pe.custom_dns_configs
+      id                       = pe.id
+      name                     = pe.name
+      location                 = pe.location
+      subnet_id                = pe.subnet_id
+      network_interface        = pe.network_interface
+      custom_dns_configs       = pe.custom_dns_configs
       private_dns_zone_configs = pe.private_dns_zone_configs
       private_service_connection = {
         name                           = pe.private_service_connection[0].name
@@ -141,7 +141,7 @@ output "private_endpoint_network_interfaces" {
   description = "Map of private endpoint network interface details"
   value = {
     for key, pe in azurerm_private_endpoint.this : key => {
-      id = pe.network_interface[0].id
+      id   = pe.network_interface[0].id
       name = pe.network_interface[0].name
     }
   }
