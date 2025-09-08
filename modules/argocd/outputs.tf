@@ -53,26 +53,29 @@ output "argocd_service_accounts" {
   }
 }
 
-output "argocd_projects" {
-  description = "Map of created ArgoCD projects"
-  value = {
-    for key, project in kubernetes_manifest.argocd_projects : key => {
-      name      = project.manifest.metadata.name
-      namespace = project.manifest.metadata.namespace
-    }
-  }
-}
-
-output "argocd_applications" {
-  description = "Map of created ArgoCD applications"
-  value = {
-    for key, app in kubernetes_manifest.argocd_applications : key => {
-      name      = app.manifest.metadata.name
-      namespace = app.manifest.metadata.namespace
-      project   = app.manifest.spec.project
-    }
-  }
-}
+# Note: These outputs are commented out because kubernetes_manifest resources are disabled
+# Projects and applications can be created manually or via ArgoCD CLI after deployment
+#
+# output "argocd_projects" {
+#   description = "Map of created ArgoCD projects"
+#   value = {
+#     for key, project in kubernetes_manifest.argocd_projects : key => {
+#       name      = project.manifest.metadata.name
+#       namespace = project.manifest.metadata.namespace
+#     }
+#   }
+# }
+# 
+# output "argocd_applications" {
+#   description = "Map of created ArgoCD applications"
+#   value = {
+#     for key, app in kubernetes_manifest.argocd_applications : key => {
+#       name      = app.manifest.metadata.name
+#       namespace = app.manifest.metadata.namespace
+#       project   = app.manifest.spec.project
+#     }
+#   }
+# }
 
 output "argocd_admin_secrets" {
   description = "Map of ArgoCD admin secret names (for initial password setup)"

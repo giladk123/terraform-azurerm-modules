@@ -167,134 +167,140 @@ resource "kubernetes_cluster_role_binding" "argocd_cli" {
 }
 
 # ArgoCD Projects (if specified)
-resource "kubernetes_manifest" "argocd_projects" {
-  for_each = merge([
-    for deployment_key, deployment in var.argocd_deployments : {
-      for project_key, project in deployment.projects : "${deployment_key}-${project_key}" => merge(project, {
-        deployment_key = deployment_key
-        namespace      = deployment.namespace
-      })
-    }
-  ]...)
-
-  manifest = {
-    apiVersion = "argoproj.io/v1alpha1"
-    kind       = "AppProject"
-    metadata = {
-      name      = each.value.name
-      namespace = each.value.namespace
-      labels = merge(
-        {
-          "app.kubernetes.io/name"    = "argocd-project"
-          "app.kubernetes.io/part-of" = "argocd"
-        },
-        each.value.labels
-      )
-      annotations = each.value.annotations
-    }
-    spec = {
-      description = each.value.description
-
-      sourceRepos = each.value.source_repos
-
-      destinations = [
-        for dest in each.value.destinations : {
-          server    = dest.server
-          namespace = dest.namespace
-        }
-      ]
-
-      clusterResourceWhitelist   = each.value.cluster_resource_whitelist
-      namespaceResourceWhitelist = each.value.namespace_resource_whitelist
-
-      roles = [
-        for role in each.value.roles : {
-          name        = role.name
-          description = role.description
-          policies    = role.policies
-          groups      = role.groups
-        }
-      ]
-    }
-  }
-
-  depends_on = [helm_release.argocd]
-}
+# Note: Commented out due to provider configuration issues
+# Projects can be created manually or via ArgoCD CLI after deployment
+# 
+# resource "kubernetes_manifest" "argocd_projects" {
+#   for_each = merge([
+#     for deployment_key, deployment in var.argocd_deployments : {
+#       for project_key, project in deployment.projects : "${deployment_key}-${project_key}" => merge(project, {
+#         deployment_key = deployment_key
+#         namespace      = deployment.namespace
+#       })
+#     }
+#   ]...)
+# 
+#   manifest = {
+#     apiVersion = "argoproj.io/v1alpha1"
+#     kind       = "AppProject"
+#     metadata = {
+#       name      = each.value.name
+#       namespace = each.value.namespace
+#       labels = merge(
+#         {
+#           "app.kubernetes.io/name"    = "argocd-project"
+#           "app.kubernetes.io/part-of" = "argocd"
+#         },
+#         each.value.labels
+#       )
+#       annotations = each.value.annotations
+#     }
+#     spec = {
+#       description = each.value.description
+# 
+#       sourceRepos = each.value.source_repos
+# 
+#       destinations = [
+#         for dest in each.value.destinations : {
+#           server    = dest.server
+#           namespace = dest.namespace
+#         }
+#       ]
+# 
+#       clusterResourceWhitelist   = each.value.cluster_resource_whitelist
+#       namespaceResourceWhitelist = each.value.namespace_resource_whitelist
+# 
+#       roles = [
+#         for role in each.value.roles : {
+#           name        = role.name
+#           description = role.description
+#           policies    = role.policies
+#           groups      = role.groups
+#         }
+#       ]
+#     }
+#   }
+# 
+#   depends_on = [helm_release.argocd]
+# }
 
 # ArgoCD Applications (if specified)
-resource "kubernetes_manifest" "argocd_applications" {
-  for_each = merge([
-    for deployment_key, deployment in var.argocd_deployments : {
-      for app_key, app in deployment.applications : "${deployment_key}-${app_key}" => merge(app, {
-        deployment_key = deployment_key
-        namespace      = deployment.namespace
-      })
-    }
-  ]...)
-
-  manifest = {
-    apiVersion = "argoproj.io/v1alpha1"
-    kind       = "Application"
-    metadata = {
-      name      = each.value.name
-      namespace = each.value.namespace
-      labels = merge(
-        {
-          "app.kubernetes.io/name"    = "argocd-application"
-          "app.kubernetes.io/part-of" = "argocd"
-        },
-        each.value.labels
-      )
-      annotations = each.value.annotations
-      finalizers  = ["resources-finalizer.argocd.argoproj.io"]
-    }
-    spec = {
-      project = each.value.project
-
-      source = merge(
-        {
-          repoURL        = each.value.source.repo_url
-          path           = each.value.source.path
-          targetRevision = each.value.source.target_revision
-        },
-        each.value.source.helm != null ? {
-          helm = {
-            valueFiles = each.value.source.helm.value_files
-            values     = each.value.source.helm.values
-          }
-        } : {},
-        each.value.source.kustomize != null ? {
-          kustomize = {
-            namePrefix = each.value.source.kustomize.name_prefix
-            nameSuffix = each.value.source.kustomize.name_suffix
-            images     = each.value.source.kustomize.images
-          }
-        } : {}
-      )
-
-      destination = {
-        server    = each.value.destination.server
-        namespace = each.value.destination.namespace
-      }
-
-      syncPolicy = {
-        automated = each.value.sync_policy.automated != null ? {
-          prune    = each.value.sync_policy.automated.prune
-          selfHeal = each.value.sync_policy.automated.self_heal
-        } : null
-
-        syncOptions = each.value.sync_policy.sync_options
-        retry = each.value.sync_policy.retry != null ? {
-          limit = each.value.sync_policy.retry.limit
-          backoff = {
-            duration    = each.value.sync_policy.retry.backoff.duration
-            factor      = each.value.sync_policy.retry.backoff.factor
-            maxDuration = each.value.sync_policy.retry.backoff.max_duration
-          }
-        } : null
-      }
-    }
-  }
-
-  depends_on = [helm_release.argocd, kubernetes_manifest.argocd_projects]
-}
+# Note: Commented out due to provider configuration issues
+# Applications can be created manually or via ArgoCD CLI after deployment
+#
+# resource "kubernetes_manifest" "argocd_applications" {
+#   for_each = merge([
+#     for deployment_key, deployment in var.argocd_deployments : {
+#       for app_key, app in deployment.applications : "${deployment_key}-${app_key}" => merge(app, {
+#         deployment_key = deployment_key
+#         namespace      = deployment.namespace
+#       })
+#     }
+#   ]...)
+# 
+#   manifest = {
+#     apiVersion = "argoproj.io/v1alpha1"
+#     kind       = "Application"
+#     metadata = {
+#       name      = each.value.name
+#       namespace = each.value.namespace
+#       labels = merge(
+#         {
+#           "app.kubernetes.io/name"    = "argocd-application"
+#           "app.kubernetes.io/part-of" = "argocd"
+#         },
+#         each.value.labels
+#       )
+#       annotations = each.value.annotations
+#       finalizers  = ["resources-finalizer.argocd.argoproj.io"]
+#     }
+#     spec = {
+#       project = each.value.project
+# 
+#       source = merge(
+#         {
+#           repoURL        = each.value.source.repo_url
+#           path           = each.value.source.path
+#           targetRevision = each.value.source.target_revision
+#         },
+#         each.value.source.helm != null ? {
+#           helm = {
+#             valueFiles = each.value.source.helm.value_files
+#             values     = each.value.source.helm.values
+#           }
+#         } : {},
+#         each.value.source.kustomize != null ? {
+#           kustomize = {
+#             namePrefix = each.value.source.kustomize.name_prefix
+#             nameSuffix = each.value.source.kustomize.name_suffix
+#             images     = each.value.source.kustomize.images
+#           }
+#         } : {}
+#       )
+# 
+#       destination = {
+#         server    = each.value.destination.server
+#         namespace = each.value.destination.namespace
+#       }
+# 
+#       syncPolicy = {
+#         automated = each.value.sync_policy.automated != null ? {
+#           prune    = each.value.sync_policy.automated.prune
+#           selfHeal = each.value.sync_policy.automated.self_heal
+#         } : null
+# 
+#         syncOptions = each.value.sync_policy.sync_options
+#         retry = each.value.sync_policy.retry != null ? {
+#           limit = each.value.sync_policy.retry.limit
+#           backoff = {
+#             duration    = each.value.sync_policy.retry.backoff.duration
+#             factor      = each.value.sync_policy.retry.backoff.factor
+#             maxDuration = each.value.sync_policy.retry.backoff.max_duration
+#           }
+#         } : null
+#       }
+#     }
+#   }
+# 
+#   depends_on = [helm_release.argocd]
+# }
