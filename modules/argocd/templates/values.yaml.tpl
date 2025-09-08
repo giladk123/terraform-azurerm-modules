@@ -22,12 +22,12 @@ server:
     hostname: ${server_ingress_hostname}
     tls: ${server_ingress_tls_enabled}
     annotations: ${server_ingress_annotations}
-    %{ if server_ingress_cert_manager }
+    %{ if server_ingress_cert_manager ~}
     tls:
       - secretName: argocd-server-tls
         hosts:
           - ${server_ingress_hostname}
-    %{ endif }
+    %{ endif ~}
   
   # Resource configuration
   resources: ${server_resources}

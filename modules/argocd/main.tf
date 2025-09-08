@@ -60,7 +60,7 @@ resource "helm_release" "argocd" {
       admin_password_bcrypt = each.value.security.admin_password_bcrypt
 
       # Additional configurations
-      configs = jsonencode(each.value.configs)
+      configs = each.value.configs
 
       # Node selector and tolerations
       node_selector = jsonencode(each.value.node_selector)
